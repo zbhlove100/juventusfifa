@@ -1,6 +1,10 @@
-.navbar-brand {
+/*.navbar-brand {
 	padding: 10px 10px;
 	font-size: 19px;
 	line-height: 20px;
 	background-image: url("/images/juventus.jpg");
+}*/
+#logincontainer{
+	margin-top: 100px;
+	margin-bottom: 100px;
 }

@@ -11,6 +11,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var admin = require('./routes/admin')
 
+var expressValidator = require('express-validator')
 var app = express();
 
 // view engine setup
@@ -25,7 +26,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({secret: 'UYG899'}));
-
+app.use(expressValidator());
 app.use('/', routes);
 app.use('/users', users);
 /*app.get('/admin/login',admin.login);
