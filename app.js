@@ -5,9 +5,11 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('cookie-session')
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var admin = require('./routes/admin')
 
 var app = express();
 
@@ -22,8 +24,13 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({secret: 'UYG899'}));
+
 app.use('/', routes);
 app.use('/users', users);
+/*app.get('/admin/login',admin.login);
+app.get('/admin/logout',admin.logout);*/
+app.use('/admin',admin);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -1,8 +1,6 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
-a {
-  color: #00B7FF;
+.navbar-brand {
+	padding: 10px 10px;
+	font-size: 19px;
+	line-height: 20px;
+	background-image: url("/images/juventus.jpg");
 }

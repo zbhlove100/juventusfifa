@@ -1,0 +1,32 @@
+html
+  head
+    title= title
+    script(src='/js/jquery11.1.min.js')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-3.2.0-dist/css/bootstrap.min.css')
+    script(src='/stylesheets/bootstrap-3.2.0-dist/js/bootstrap.min.js')
+  body
+    div(class="container")
+      div(class="row")
+        div(class="col-xs-12")
+          div(id="index" class="container")
+            div(id='errormessage' style='text-align:center;color:red; font-size:16px;')
+            div(class='row')
+              form.form-signin(role='form' action='/' method='post')
+                div(class='inputcss align:center')
+                  input.form-control(name='username' placeholder='Username' required)
+                div(class='inputcss align:center')
+                  input.form-control(name='password' type='password'  placeholder='Password' required)
+                div(class='inputcss align:center')
+                  input(class='btn btn-lg btn-primary btn-block' type='submit' value='Login')
+
+
+    block script
+    script.
+      $('body').addClass('which_!{which} where_!{where}');
+      window.onload=function(){
+        var err="!{err}";
+        $("#errormessage").text(err);
+      }
+
+

@@ -2,8 +2,52 @@ doctype html
 html
   head
     title= title
+    script(src='/js/jquery11.1.min.js')
     link(rel='stylesheet', href='/stylesheets/style.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-3.2.0-dist/css/bootstrap.min.css')
     script(src='/stylesheets/bootstrap-3.2.0-dist/js/bootstrap.min.js')
+
   body
+    .navbar.navbar-default.navbar-static-top(role='navigation')
+      .container
+        .navbar-header
+          button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+           img(src="/images/juventus.jpg" height="50px" width="50px")
+          //a.navbar-brand(href='#') Project name
+        .navbar-collapse.collapse
+          ul.nav.navbar-nav
+            li.active
+              a(href='#') Home
+            li
+              a(href='#about') Recent match
+            li
+              a(href='#contact') Contact
+            li.dropdown
+              a.dropdown-toggle(href='#', data-toggle='dropdown')
+                | Dropdown 
+                span.caret
+              ul.dropdown-menu(role='menu')
+                li
+                  a(href='#') Action
+                li
+                  a(href='#') Another action
+                li
+                  a(href='#') Something else here
+                li.divider
+                li.dropdown-header Nav header
+                li
+                  a(href='#') Separated link
+                li
+                  a(href='#') One more separated link
+          ul.nav.navbar-nav.navbar-right
+            li
+              a(href='#') About
+            li
+              a(href='#') BBS
+            li
+              a(href='/admin') Admin
     block content
