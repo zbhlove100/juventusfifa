@@ -1,0 +1,62 @@
+extends layout
+block content
+  link(rel='stylesheet', href='/stylesheets/admindashboard.css')
+  script.
+    function addleague(){
+      var playername = $.trim($("#playername").val())
+      var playerqq = $.trim($("#playerqq").val())
+      if(playername!=""&&playerqq!=""){
+        $.ajax({
+          url:"/admin/createplayer",
+          type:"POST",
+          data:{"playername":playername,"playerqq":playerqq},
+          dataType:"json",
+          success:function(data){
+            getplayers(1);
+          }
+          })
+      }
+    }
+    var trtemplate = "<tr><td>{no}</td><td>{playername}</td><td>{qq}</td><td>{matchsum}</td></tr>";
+    var getleagues = function(){
+        $.ajax({
+          url:"/admin/getleaguelist",
+          type:"GET",
+          data:{},
+          dataType:"json",
+          success:function(data){
+            $("#playerlisttable>tbody").empty()
+            $.each(data,function(index,value){
+              var template1 = trtemplate.replace('{no}',index).replace('{playername}',value.name).replace('{qq}',value.qq).replace('{matchsum}',0)
+              $("#playerlisttable>tbody").append(template1)
+              })
+          }
+          })
+    }
+    $(function(){
+      })
+  .container-fluid
+      .row
+        include adminsidebar
+        .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+          h1.page-header League Management
+          .row.placeholders
+            .col-xs-6.col-sm-3
+              img(src='/images/fifalogo.jpg', alt='soccer' height="100px") 
+              h4 Play number
+              span.vsfont 40
+            .col-xs-3.col-sm-3
+              
+             button.btn.btn-success(onclick="addleague()") Add Player
+                     
+          h2.sub-header Play list
+          .table-responsive
+            table.table.table-striped#playerlisttable
+              thead
+                tr
+                  th #
+                  th Player name
+                  th qq
+                  th Played match
+              tbody
+                

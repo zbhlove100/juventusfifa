@@ -3,5 +3,6 @@
 	"database_url":"127.0.0.1",
 	"database_user":"root",
 	"database_pass":"zbhxzz",
-	"database_name":"nodejs"
+	"database_name":"juventus",
+	"connectionLimit":"5"
 }

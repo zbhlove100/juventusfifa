@@ -17,18 +17,30 @@ html
             div(class="form-group")
               h3(style="text-align:center") Admin Login
             div(class='form-group')
-              input.form-control(name='username' placeholder='Username' required)
+              input.form-control(name='username' placeholder='Username')
             div(class='form-group')
-              input.form-control(name='password' type='password'  placeholder='Password' required)
+              input.form-control(name='password' type='password'  placeholder='Password')
             div(class='form-group')
               input(class='btn btn-lg btn-primary btn-block' type='submit' value='Login')
+              #alertInfo
+          
 
 
     block script
     script.
+      var info_template = '<div class="alert alert-{infoclass} alert-dismissable">' + 
+                    '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' +
+                    '{substitue}' +
+                   '</div>';
+      function alert_info(message,infoclass){
+        var template1 = info_template.replace('{substitue}',message).replace('{infoclass}',infoclass)
+        $("#alertInfo").html(template1)
+      }
       window.onload=function(){
-        var err="!{err}";
-        $("#errormessage").text(err);
+        var err="#{error}";
+        if(err){
+         alert_info(err,"danger")
+        }
       }
 
 

@@ -3,20 +3,81 @@ block content
   //- nav.navbar.navbar-default( role="navigation")
   //-   div.container-fluid
   //-     a.navbar-brand(href="#") Brand
+
   div.container
     div.row
       div.col-xs-12
         h1 Match result
-    div.row
-      div.col-xs-12
-        div.panel.info
-          div.panel-heading GOURP A
-          div.panel-body
+    .row
+      .col-xs-12
+        .panel.panel-default
+          .panel-heading Resent Match Result
+          .panel-body(style="background-color: #E8E2E6")
+            .row
+              .col-xs-6.col-sm-3
+                .matchresultcard
+                  .row.matchresultteam
+                    .col-xs-8
+                      p zhangbohan
+                    .col-xs-4
+                      p 9
+                  .row
+                    .col-xs-12.vsfont
+                      strong VS                    
+                  .row.matchresultteam
+                    .col-xs-8
+                      p 体感效果
+                    .col-xs-4
+                      p 6
+              .col-xs-6.col-sm-3
+                .matchresultcard
+              .col-xs-6.col-sm-3
+                .matchresultcard
+              .col-xs-6.col-sm-3
+                .matchresultcard
+
+    .row
+      .col-xs-12
+        .panel.panel-default
+          .panel-heading Group A
+          .panel-body
             table.table.table-striped
+              tr
+                th NAME
+                th USER TEAM
+                th MATCH NUMBER
+                th 胜
+                th 平
+                th 负 
+                th 进球 
+                th 失球 
+                th 净胜球 
+                th 积分 
               tr
                 td A
                 td blo
                 td container
+                td A
+                td blo
+                td container
+                td A
+                td blo
+                td container
+                td 100
+    script.
+      var info_template = '<div class="alert alert-{infoclass} alert-dismissable">' + 
+                    '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' +
+                    '{substitue}' +
+                   '</div>';
+      function alert_info(message,infoclass){
+        var template1 = info_template.replace('{substitue}',message).replace('{infoclass}',infoclass)
+        $("#alertInfo").html(template1)
+      }
+      $(function(){
+        var username="#{userid}";
+        console.log("@@@@"+username)
+        if(username){
+          $("#welcomeusername").html(username)
+        }
+      })
 
-
-  

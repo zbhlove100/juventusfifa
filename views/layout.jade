@@ -21,7 +21,7 @@ html
         .navbar-collapse.collapse
           ul.nav.navbar-nav
             li.active
-              a(href='#') Home
+              a(href='/') Home
             li
               a(href='#about') Recent match
             li
@@ -48,6 +48,22 @@ html
               a(href='#') About
             li
               a(href='#') BBS
-            li
-              a(href='/admin') Admin
+            -if (userid)
+              li 
+                a Welcome 
+                  Strong #{username}
+              li
+                a(href='/admin')
+                  button.btn.btn-success.btn-xs Admin
+              li
+                a(href='/logout')
+                  button.btn.btn-warning.btn-xs Logout
+            -else
+              li
+                a(href='/admin') Admin Login
     block content
+
+    script.
+      $(function(){
+        console.log("layout.jade")
+        })
