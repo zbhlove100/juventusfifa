@@ -2,7 +2,11 @@ extends layout
 block content
   link(rel='stylesheet', href='/stylesheets/admindashboard.css')
   script.
-    function addleague(){
+    function showAddLeaguePage(){
+      $("#insertleague input[type=text]").val("");
+      $("#addLeagueModel").modal('show');
+    }
+    function addLeague(){
       var playername = $.trim($("#playername").val())
       var playerqq = $.trim($("#playerqq").val())
       if(playername!=""&&playerqq!=""){
@@ -35,11 +39,31 @@ block content
     }
     $(function(){
       })
+  .modal.fade#addLeagueModel
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal')
+            span(aria-hidden='true') &times;
+            span.sr-only Close
+          h4.modal-title New League
+        .modal-body
+          form#insertleague(role="form")
+              .form-group.text-left
+                label(for="leaguename") league name
+                input#leaguename.form-control(type="text" placeholder="Enter name")
+              .form-group.text-left
+                label(for="playerqq") Groups
+                input#leaguegroup.form-control(type="text" placeholder="Group number")
+        .modal-footer
+          button.btn.btn-default(type='button', data-dismiss='modal') Close
+          button.btn.btn-primary(type='button' onclick="addLeague()") Save changes
   .container-fluid
       .row
         include adminsidebar
         .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
           h1.page-header League Management
+            button.btn.btn-success.pull-right(onclick="showAddLeaguePage()") Add League
           .row.placeholders
             .col-xs-6.col-sm-3
               img(src='/images/fifalogo.jpg', alt='soccer' height="100px") 
@@ -47,7 +71,7 @@ block content
               span.vsfont 40
             .col-xs-3.col-sm-3
               
-             button.btn.btn-success(onclick="addleague()") Add Player
+             
                      
           h2.sub-header Play list
           .table-responsive

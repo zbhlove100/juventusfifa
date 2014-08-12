@@ -25,6 +25,7 @@ block content
           data:{},
           dataType:"json",
           success:function(data){
+            $("#totalplayernum").html(data.length)
             $("#playerlisttable>tbody").empty()
             $.each(data,function(index,value){
               var template1 = trtemplate.replace('{no}',index).replace('{playername}',value.name).replace('{qq}',value.qq).replace('{matchsum}',0)
@@ -44,8 +45,8 @@ block content
           .row.placeholders
             .col-xs-6.col-sm-3
               img(src='/images/soccer.jpg', alt='soccer' height="100px") 
-              h4 Play number
-              span.vsfont 40
+              h4 Total players
+              span.vsfont#totalplayernum 40
             .col-xs-3.col-sm-3
               form#insertplayer(role="form")
                 .form-group.text-left

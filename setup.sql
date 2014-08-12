@@ -24,12 +24,12 @@ DROP TABLE IF EXISTS `group`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `group` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
   `league_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_group_league1` (`league_id`),
   CONSTRAINT `fk_group_league1` FOREIGN KEY (`league_id`) REFERENCES `league` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -50,10 +50,10 @@ DROP TABLE IF EXISTS `league`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `league` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) COLLATE utf8_bin DEFAULT NULL,
-  `status` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `status` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,18 +74,18 @@ DROP TABLE IF EXISTS `matchlist`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `matchlist` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `hometeam` varchar(45) COLLATE utf8_bin DEFAULT NULL,
-  `awayteam` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `hometeam` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `awayteam` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
   `homescore` int(11) DEFAULT NULL,
   `awayscore` int(11) DEFAULT NULL,
-  `discription` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `discription` varchar(255) COLLATE utf8_general_ci DEFAULT NULL,
   `league_id` bigint(20) DEFAULT NULL,
   `hometeamid` bigint(20) DEFAULT NULL,
-  `awayteamid` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `awayteamid` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_matchlist_league` (`league_id`),
   CONSTRAINT `fk_matchlist_league` FOREIGN KEY (`league_id`) REFERENCES `league` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -106,13 +106,13 @@ DROP TABLE IF EXISTS `player`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `player` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
   `matchsum` int(11) DEFAULT NULL,
-  `team` varchar(45) COLLATE utf8_bin DEFAULT NULL,
-  `qq` varchar(45) COLLATE utf8_bin DEFAULT NULL,
-  `nickname` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `team` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `qq` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `nickname` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -134,12 +134,12 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) COLLATE utf8_bin DEFAULT NULL,
-  `password` varchar(45) COLLATE utf8_bin DEFAULT NULL,
-  `role` varchar(45) COLLATE utf8_bin DEFAULT NULL,
-  `qq` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `password` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `role` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `qq` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
