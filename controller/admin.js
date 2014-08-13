@@ -56,6 +56,38 @@ exports.dologout = function(req,res,next){
   req.session = null;
   res.redirect('/');
 }
+exports.createleague = function(req,res){
+  var mode = "double"
+  var queryobj = {}
+  queryobj.sql = "insert league(name,mode,status) values (:leaguename,:mode,:status)";
+  queryobj.params = {"leaguename":req.body.leaguename,"mode":mode,"status":"Active"}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err || !rows || rows.affectedRows === 0) {
+          console.log("mysql err:"+err)
+          passauth = false;
+          return res.send({"status":"error"})
+      }
+      res.send({"status":"Success"})
+    }
+  )
+}
+exports.getleagues = function(req,res){
+  var queryobj = {}
+  queryobj.sql = "select name,mode,id,status from league where status = :status";
+  queryobj.params = {"status":"Active"}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err || !rows || rows.affectedRows === 0) {
+          console.log("mysql err:"+err)
+          passauth = false;
+          return res.send({"status":"error"})
+      }
+      console.log(rows)
+      res.send(rows)
+    }
+  )
+}
 exports.createplayer = function(req,res){
   var queryobj = {}
   queryobj.sql = "insert player(name,qq) values (:playername,:playerqq)";

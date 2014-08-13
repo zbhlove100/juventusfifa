@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(session({secret: 'UYG899',maxage:600000}));
+app.use(session({secret: 'UYG899',maxage:6000000}));
 app.use(expressValidator());
 app.use('/', routes);
 app.use('/users', users);

@@ -7,21 +7,23 @@ block content
       $("#addLeagueModel").modal('show');
     }
     function addLeague(){
-      var playername = $.trim($("#playername").val())
-      var playerqq = $.trim($("#playerqq").val())
-      if(playername!=""&&playerqq!=""){
+      var leaguename = $.trim($("#leaguename").val())
+
+      if(leaguename!=""){
         $.ajax({
-          url:"/admin/createplayer",
+          url:"/admin/createLeague",
           type:"POST",
-          data:{"playername":playername,"playerqq":playerqq},
+          data:{"leaguename":leaguename},
           dataType:"json",
           success:function(data){
-            getplayers(1);
+            $("#addLeagueModel").modal('hide');
+            getleagues();
           }
           })
       }
     }
-    var trtemplate = "<tr><td>{no}</td><td>{playername}</td><td>{qq}</td><td>{matchsum}</td></tr>";
+    var trtemplate = "<tr><td>{no}</td><td>{leaguename}</td><td>{mode}</td><td>{status}</td>"+
+                    "<td><a class='btn btn-primary' href='/admin/editleague?id={leagueid}&name={leaguename2}'>Edit</a></td></tr>";
     var getleagues = function(){
         $.ajax({
           url:"/admin/getleaguelist",
@@ -29,15 +31,22 @@ block content
           data:{},
           dataType:"json",
           success:function(data){
-            $("#playerlisttable>tbody").empty()
+            $("#leaguelisttable>tbody").empty()
             $.each(data,function(index,value){
-              var template1 = trtemplate.replace('{no}',index).replace('{playername}',value.name).replace('{qq}',value.qq).replace('{matchsum}',0)
-              $("#playerlisttable>tbody").append(template1)
+              var template1 = trtemplate.replace('{no}',index)
+                                        .replace('{leaguename}',value.name)
+                                        .replace('{mode}',value.mode)
+                                        .replace('{status}',value.status)
+                                        .replace('{leagueid}',value.id)
+                                        .replace('{leaguename2}',value.name)
+                                          
+              $("#leaguelisttable>tbody").append(template1)
               })
           }
           })
     }
     $(function(){
+      getleagues();
       })
   .modal.fade#addLeagueModel
     .modal-dialog
@@ -48,13 +57,15 @@ block content
             span.sr-only Close
           h4.modal-title New League
         .modal-body
-          form#insertleague(role="form")
-              .form-group.text-left
-                label(for="leaguename") league name
-                input#leaguename.form-control(type="text" placeholder="Enter name")
-              .form-group.text-left
-                label(for="playerqq") Groups
-                input#leaguegroup.form-control(type="text" placeholder="Group number")
+          form#insertplayer.form-horizontal(role="form")
+              .form-group
+                label.col-sm-2.control-label(for="playername") Name
+                .col-sm-10
+                  input#leaguename.form-control(type="text" placeholder="Enter name")
+              .form-group
+                label.col-sm-2.control-label(for="playerqq") 赛制
+                .col-sm-10
+                  p.form-control-static 双循环
         .modal-footer
           button.btn.btn-default(type='button', data-dismiss='modal') Close
           button.btn.btn-primary(type='button' onclick="addLeague()") Save changes
@@ -70,17 +81,15 @@ block content
               h4 Play number
               span.vsfont 40
             .col-xs-3.col-sm-3
-              
-             
-                     
+   
           h2.sub-header Play list
           .table-responsive
-            table.table.table-striped#playerlisttable
+            table.table.table-striped#leaguelisttable
               thead
                 tr
                   th #
-                  th Player name
-                  th qq
-                  th Played match
+                  th league name
+                  th mode
+                  th status
               tbody
                 
