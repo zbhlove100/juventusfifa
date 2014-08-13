@@ -88,6 +88,24 @@ exports.getleagues = function(req,res){
     }
   )
 }
+exports.getgroups = function(req,res){
+  var leagueid = req.query.leagueid;
+  var queryobj = {}
+  queryobj.sql = "select name,league_id,id from grouptable"+
+                 " left join player on(grouptable.id league_id = :leagueid)";
+  queryobj.params = {"leagueid":leagueid}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err || !rows || rows.affectedRows === 0) {
+          console.log("mysql err:"+err)
+          passauth = false;
+          return res.send({"status":"error"})
+      }
+      for(var i=0;i<rows.length;i++){}
+      res.send(rows)
+    }
+  )
+}
 exports.createplayer = function(req,res){
   var queryobj = {}
   queryobj.sql = "insert player(name,qq) values (:playername,:playerqq)";

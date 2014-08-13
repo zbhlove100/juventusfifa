@@ -19,10 +19,10 @@
 -- Table structure for table `group`
 --
 
-DROP TABLE IF EXISTS `group`;
+DROP TABLE IF EXISTS `grouptable`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `group` (
+CREATE TABLE `grouptable` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `league_id` bigint(20) DEFAULT NULL,
@@ -32,14 +32,6 @@ CREATE TABLE `group` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `group`
---
-
-LOCK TABLES `group` WRITE;
-/*!40000 ALTER TABLE `group` DISABLE KEYS */;
-/*!40000 ALTER TABLE `group` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `league`
