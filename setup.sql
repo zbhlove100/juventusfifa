@@ -24,12 +24,12 @@ DROP TABLE IF EXISTS `group`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `group` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `name` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `league_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_group_league1` (`league_id`),
   CONSTRAINT `fk_group_league1` FOREIGN KEY (`league_id`) REFERENCES `league` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -50,10 +50,11 @@ DROP TABLE IF EXISTS `league`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `league` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `status` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `name` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `status` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `mode` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -62,6 +63,7 @@ CREATE TABLE `league` (
 
 LOCK TABLES `league` WRITE;
 /*!40000 ALTER TABLE `league` DISABLE KEYS */;
+INSERT INTO `league` VALUES (1,'1234','Active','double'),(2,'1345','Active','double');
 /*!40000 ALTER TABLE `league` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -74,18 +76,18 @@ DROP TABLE IF EXISTS `matchlist`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `matchlist` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `hometeam` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `awayteam` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `hometeam` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `awayteam` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `homescore` int(11) DEFAULT NULL,
   `awayscore` int(11) DEFAULT NULL,
-  `discription` varchar(255) COLLATE utf8_general_ci DEFAULT NULL,
+  `discription` varchar(255) COLLATE utf8_bin DEFAULT NULL,
   `league_id` bigint(20) DEFAULT NULL,
   `hometeamid` bigint(20) DEFAULT NULL,
-  `awayteamid` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `awayteamid` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_matchlist_league` (`league_id`),
   CONSTRAINT `fk_matchlist_league` FOREIGN KEY (`league_id`) REFERENCES `league` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -106,13 +108,13 @@ DROP TABLE IF EXISTS `player`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `player` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `name` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `matchsum` int(11) DEFAULT NULL,
-  `team` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `qq` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `nickname` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `team` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `qq` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `nickname` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -121,7 +123,7 @@ CREATE TABLE `player` (
 
 LOCK TABLES `player` WRITE;
 /*!40000 ALTER TABLE `player` DISABLE KEYS */;
-INSERT INTO `player` VALUES (1,'11',NULL,NULL,'22',NULL),(2,'33333333333333',NULL,NULL,'1234567',NULL),(3,'zhangbohan',NULL,NULL,'123455',NULL);
+INSERT INTO `player` VALUES (1,'11',NULL,NULL,'22',NULL),(2,'33333333333333',NULL,NULL,'1234567',NULL),(3,'zhangbohan',NULL,NULL,'123455',NULL),(4,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `player` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -134,12 +136,12 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `password` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `role` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `qq` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `name` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `password` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `role` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `qq` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -161,4 +163,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-08-12 17:02:58
+-- Dump completed on 2014-08-13 19:10:58
