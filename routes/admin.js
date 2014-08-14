@@ -37,10 +37,20 @@ router.get('/getleaguelist',filter.authorize, admincontroller.getleagues);
 
 router.get('/editleague',filter.authorize, function(req,res){
 	params = getparams.generateparams(req);
-	console.log(req)
 	params.leagueid = req.query.id;
 	params.leaguename = req.query.name;
 	res.render('editleague',params)
 });
+router.get('/getgroups',filter.authorize, admincontroller.getgroups);
+router.post('/addgroup',filter.authorize, admincontroller.addgroup);
+router.post('/savegroup',filter.authorize, admincontroller.savegroup);
+
+router.get('/editagenda',filter.authorize, function(req,res){
+  params = getparams.generateparams(req);
+  params.leagueid = req.query.id;
+  params.leaguename = req.query.name;
+  res.render('editagenda',params)
+});
+
 
 module.exports = router;

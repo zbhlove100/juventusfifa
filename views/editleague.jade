@@ -5,25 +5,50 @@ block content
     var groupblocktemplate = "<div class='col-sm-2'><button class='btn btn-default' onclick='selectgroup(\"{groupnum1}\")'>"+
                               "{groupnum2} 组</button></div>";
     var leaguenode = {group:[]};
+    var lgid = "!{leagueid}"
     function isNaN(val) { 
        return val.match(new RegExp("^[0-9]+$"));
     } 
     var dict = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
     function addgroup(){
-      //- var gn = isNaN($.trim($("#groupnumber").val()))
-      
-      //- var sum = 0;
-      //- if(gn){
-      //-   sum = parseInt(gn);
-      //-   $("#grouplistpanel").empty()
-      //-   $("#renctgroupname").val(0)
-      //-   leaguenode.group = [];
-      //- }
+
       var mark = leaguenode.group.length;
-      var gpblock = groupblocktemplate.replace('{groupnum1}',dict[mark]).replace('{groupnum2}',dict[mark]);
-      $("#grouplistpanel").append(gpblock)
-      var group = {name:dict[mark],members:[]}
-      leaguenode.group.push(group)
+      var newgroupname = dict[mark];
+      var gpblock = groupblocktemplate.replace('{groupnum1}',newgroupname).replace('{groupnum2}',newgroupname);
+      $.ajax({
+          url:"/admin/addgroup",
+          type:"POST",
+          data:{"groupname":newgroupname,"leagueid":lgid},
+          dataType:"json",
+          success:function(data){
+            $("#grouplistpanel").append(gpblock)
+            var group = {name:dict[mark],members:[]}
+            leaguenode.group.push(group)
+          }
+          })
+      
+    }
+    function savegroup(){
+      var groupdata = {};
+      var recentgroup = $("#renctgroupname").val();
+      if(parseInt(recentgroup) == 0){
+        alert("请选择一下小组!")
+      }else{
+        $.each(leaguenode.group,function(index,value){
+          if(value.name == recentgroup){
+              groupdata = value;
+          }
+          })
+        $.ajax({
+            url:"/admin/savegroup",
+            type:"POST",
+            data:{"groupdata":groupdata,"leagueid":lgid},
+            dataType:"json",
+            success:function(data){
+              alert(data.status)
+            }
+            })
+      }
     }
     var trtemplate = "<tr><td>{no}</td><td>{playername}</td><td>{qq}</td><td>"+
     "<button class='btn btn-warining' onclick='deletethismem(\"{delgno}:{delmno}\")'>-</button></td></tr>";
@@ -37,9 +62,9 @@ block content
           if(value.name == groupnum)
             if(value.members){
               $.each(value.members,function(i,v){
-              var membertr = trtemplate.replace('{playername}',v.name)
-                                        .replace('{qq}',v.qq)
-                                        .replace('{no}',i)
+              var membertr = trtemplate.replace('{playername}',v.playername)
+                                        .replace('{qq}',v.playerqq)
+                                        .replace('{no}',i+1)
                                         .replace('{delgno}',index)
                                         .replace('{delmno}',i)
               $("#groupmembers>tbody").append(membertr);
@@ -87,7 +112,7 @@ block content
       var until = num*pagesize>totalmember?totalmember:num*pagesize;
       for(var i=from-1;i<until;i++){
         var value = membersnode[i];
-        var template1 = playertemplate.replace('{playerid}',value.id).replace('{index}',i).replace('{playername}',value.name).replace('{qq}',value.qq);
+        var template1 = playertemplate.replace('{playerid}',value.playerid).replace('{index}',i).replace('{playername}',value.playername).replace('{qq}',value.playerqq);
         $("#gourpeditpanel>tbody").append(template1);
       }
       $("#memberpagination>li").removeClass("active");
@@ -103,7 +128,6 @@ block content
           var ids = mixid.split(":")
           $.each(leaguenode.group,function(index,value){
               if(value.name == groupname){
-                console.log(ids[1])
                 value.members.push(membersnode[ids[1]]);
               }
             })
@@ -116,20 +140,38 @@ block content
     }
     var loadgroup = function(leagueid){
       $.ajax({
-          url:"/admin/getgroups?leagueid="+leagueid,
+          url:"/admin/getgroups?leagueid=1",
           type:"GET",
           dataType:"json",
-          success:function(data){
-            leaguenode.group = data;
+          success:function(data){ 
+            var tempdata = {};
             $.each(data,function(index,value){
-              var gpblock = groupblocktemplate.replace('{groupnum1}',value.name).replace('{groupnum2}',value.name);
-              $("#grouplistpanel").append(gpblock)
+
+               if(tempdata[value.groupname] == undefined){
+                  tempdata[value.groupname] =[]
+                  tempdata[value.groupname].push(value);
+               }else{
+                  tempdata[value.groupname].push(value);
+               }
+              })
+            $.each(tempdata,function(index,value){
+              if(value != undefined){
+                var gpblock = groupblocktemplate.replace('{groupnum1}',index).replace('{groupnum2}',index);
+                $("#grouplistpanel").append(gpblock)
+                var gnode = {name:index,members:[]}
+                if(value[0].playerid != null){
+                  gnode.members = value;
+                }
+                leaguenode.group.push(gnode)
+              }
               })
           }
           })
     }
     $(function(){
+      
       loadmembers()
+      loadgroup(lgid)
       })
   .container-fluid
     .row
@@ -156,7 +198,9 @@ block content
               p Group list
             #grouplistpanel.row
             .row(style="border-top:1px solid;margin-top:15px;")
-              h3#renctgroup
+              .col-xs-4
+                h3#renctgroup
+                  
               input#renctgroupname(type="hidden" value="0")
               table.table.table-striped#groupmembers
                 thead
@@ -164,6 +208,8 @@ block content
                     th #
                     th Player name
                     th qq
+                    th
+                      button.btn.btn-success(onclick="savegroup()") save
                 tbody
 
           .col-xs-4.col-xs-offset-1
@@ -175,7 +221,7 @@ block content
                   th qq
               tbody
             .col-xs-4.col-xs-offset-4
-              button.btn.btn-success(onclick="addmembertogroup()") ADD
+              button.btn.btn-success(onclick="addmembertogroup()") <= ADD
             .col-xs-10.col-xs-offset-2
               ul.pagination#memberpagination
       button.btn.btn-success.btn-lg(onclick="createleague()")

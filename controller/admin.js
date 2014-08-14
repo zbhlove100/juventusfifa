@@ -1,4 +1,5 @@
 var mysqlclient = require('../utils/mysqlutils.js')
+var async = require('async')
 function sessionandrend(req,res,params,passauth){
   if(passauth){
     req.session.user_id = params.username;
@@ -83,16 +84,23 @@ exports.getleagues = function(req,res){
           passauth = false;
           return res.send({"status":"error"})
       }
-      console.log(rows)
+      
       res.send(rows)
     }
   )
 }
 exports.getgroups = function(req,res){
   var leagueid = req.query.leagueid;
+  
   var queryobj = {}
-  queryobj.sql = "select name,league_id,id from grouptable"+
-                 " left join player on(grouptable.id league_id = :leagueid)";
+  queryobj.sql = "select x.groupname as groupname,y.playerid as playerid,y.playername as playername,y.qq as playerqq \n" +
+                  "from \n"+ 
+                  "(select g.name as groupname,g.id as groupid from grouptable  g where g.league_id = :leagueid) x \n"+
+                  "left join  \n"+
+                  "(select a.name as playername,a.id as playerid,a.qq as qq,b.grouptable_id as groupid  \n"+
+                    "from player a,groupplayer b where a.id = b.player_id) y \n"+
+                  "on (x.groupid = y.groupid)";
+  /*queryobj.sql = "select g.name as groupname,g.id as groupid from grouptable  g where g.league_id = :leagueid"*/
   queryobj.params = {"leagueid":leagueid}
   mysqlclient.query(
     queryobj,function(err,rows){
@@ -101,11 +109,82 @@ exports.getgroups = function(req,res){
           passauth = false;
           return res.send({"status":"error"})
       }
-      for(var i=0;i<rows.length;i++){}
+      
       res.send(rows)
     }
   )
 }
+
+exports.addgroup = function(req,res){
+  var queryobj = {}
+  queryobj.sql = "insert grouptable(name,league_id) values (:groupname,:leagueid)";
+  queryobj.params = {"groupname":req.body.groupname,"leagueid":req.body.leagueid}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err || !rows || rows.affectedRows === 0) {
+          console.log("mysql err:"+err)
+          passauth = false;
+          return res.send({"status":"error"})
+      }
+      res.send({"status":"Success"})
+    }
+  )
+}
+
+exports.savegroup = function(req,res){
+  var groupdata = req.body.groupdata;
+  var queryobj = {}
+  queryobj.sql = "select id,name from grouptable where league_id = :leagueid and name = :groupname";
+  queryobj.params = {"groupname":groupdata.name,"leagueid":req.body.leagueid}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err || !rows || rows.affectedRows === 0) {
+          console.log("mysql err:"+err)
+          passauth = false;
+          return res.send({"status":"error"})
+      }
+      var groupid = rows[0].id;
+      console.log("groupid:"+groupid)
+      var queryobj1 = {}
+      queryobj1.sql = "delete from groupplayer where grouptable_id = :groupid";
+      queryobj1.params = {"groupid":groupid}
+      mysqlclient.query(queryobj1,function(err,rows){
+        if (err) {
+            console.log("mysql err:"+err)
+            passauth = false;
+            return res.send({"status":"error"})
+        }
+        console.log("affectedRows:"+rows.affectedRows)
+        
+        var attr = []
+        for(var i=0;i<groupdata.members.length;i++){
+          var t = groupdata.members[i]
+          //var n = {"groupid":groupid,"playerid":parseInt(t.playerid)}
+          var n=[groupid,parseInt(t.playerid)]
+          attr.push(n);
+        }
+        var pool = mysqlclient.getpool();
+        var queryobj2 = {}
+        pool.getConnection(function (err, connection) {
+
+          if (err) {
+              throw err;
+          }
+          queryobj2.sql = "insert groupplayer(grouptable_id,player_id) values" + connection.escape(attr);
+          connection.query(queryobj2.sql, function(err, results) {
+            if (err) {
+              console.log("mysql err:"+err)
+              return res.send({"status":"error"})
+            }
+            return res.send({"status":"success"})
+          })
+        })
+      })
+      
+    }
+  )
+}
+
 exports.createplayer = function(req,res){
   var queryobj = {}
   queryobj.sql = "insert player(name,qq) values (:playername,:playerqq)";
@@ -123,7 +202,7 @@ exports.createplayer = function(req,res){
 }
 exports.getplayerlist = function(req,res){
   var queryobj = {}
-  queryobj.sql = "select name,qq,id from player";
+  queryobj.sql = "select name as playername,qq as playerqq,id as playerid from player";
   queryobj.params = {}
   mysqlclient.query(
     queryobj,function(err,rows){
@@ -132,7 +211,6 @@ exports.getplayerlist = function(req,res){
           passauth = false;
           return res.send({"status":"error"})
       }
-      console.log(rows)
       res.send(rows)
     }
   )

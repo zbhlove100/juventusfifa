@@ -28,7 +28,7 @@ block content
             $("#totalplayernum").html(data.length)
             $("#playerlisttable>tbody").empty()
             $.each(data,function(index,value){
-              var template1 = trtemplate.replace('{no}',index).replace('{playername}',value.name).replace('{qq}',value.qq).replace('{matchsum}',0)
+              var template1 = trtemplate.replace('{no}',index).replace('{playername}',value.playername).replace('{qq}',value.playerqq).replace('{matchsum}',0)
               $("#playerlisttable>tbody").append(template1)
               })
           }
