@@ -24,7 +24,7 @@ block content
     }
     var trtemplate = "<tr><td>{no}</td><td>{leaguename}</td><td>{mode}</td><td>{status}</td>"+
                     "<td><a class='btn btn-primary' href='/admin/editleague?id={leagueid}&name={leaguename2}'>Group</a></td>"+
-                    "<td><a class='btn btn-primary' href='/admin/editagenda?id={leagueid}&name={leaguename2}'>赛程</a></td></tr>";
+                    "<td><a class='btn btn-primary' href='/admin/editagenda?id={leagueid2}&name={leaguename3}'>赛程</a></td></tr>";
     var getleagues = function(){
         $.ajax({
           url:"/admin/getleaguelist",
@@ -40,6 +40,8 @@ block content
                                         .replace('{status}',value.status)
                                         .replace('{leagueid}',value.id)
                                         .replace('{leaguename2}',value.name)
+                                        .replace('{leagueid2}',value.id)
+                                        .replace('{leaguename3}',value.name)
                                           
               $("#leaguelisttable>tbody").append(template1)
               })

@@ -51,6 +51,8 @@ router.get('/editagenda',filter.authorize, function(req,res){
   params.leaguename = req.query.name;
   res.render('editagenda',params)
 });
+router.post('/generatematchlist',filter.authorize, admincontroller.generatematchlist);
+
 
 
 module.exports = router;

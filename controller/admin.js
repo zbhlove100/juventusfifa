@@ -215,3 +215,15 @@ exports.getplayerlist = function(req,res){
     }
   )
 }
+exports.generatematchlist = function(req,res){
+  var groupid = req.body.groupid;
+  var leagueid = req.body.leagueid;
+  var queryobj = {}
+  queryobj.sql = "select a.name as playername,a.id as playerid,a.qq as qq,b.grouptable_id as groupid  \n"+
+                    "from player a,groupplayer b where a.id = b.player_id and b.grouptable_id = :groupid";
+  /*queryobj.sql = "select g.name as groupname,g.id as groupid from grouptable  g where g.league_id = :leagueid"*/
+  queryobj.params = {"leagueid":leagueid}
+
+
+
+}

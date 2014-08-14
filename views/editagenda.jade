@@ -1,1 +1,48 @@
-editagenda.jade
+extends layout
+block content
+  link(rel='stylesheet', href='/stylesheets/admindashboard.css')
+  script.
+    var lgid = "!{leagueid}"
+    function generatematchlist(group){
+      $.ajax({
+          url:"/admin/generatematchlist",
+          type:"POST",
+          data:{"groupname":group,"leagueid":lgid},
+          dataType:"json",
+          success:function(data){
+            
+          }
+          })
+    }
+    $(function(){
+      
+      
+      })
+  .container-fluid
+    .row
+      include adminsidebar
+      .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2
+        input#leagueid(type="hidden" value="#{leagueid}")
+        h1.page-header League Management
+        form#insertplayer.form-horizontal(role="form")
+          .form-group
+            label.col-sm-2.control-label(for="playername") Name
+            .col-sm-10
+              p.form-control-static #{leaguename}
+          .form-group
+            label.col-sm-2.control-label(for="playerqq") 赛制
+            .col-sm-10
+              p.form-control-static 双循环
+          .form-group
+            label.col-sm-2.control-label(for="playerqq")
+            .col-sm-2
+              
+        .row
+          .col-xs-12
+            .panel.panel-default
+              .panel-heading Group A
+                button.btn.btn-primary.pull-right(type="button" onclick="generatematchlist('A')") 生成赛程
+              .panel-body
+                table.table.table-striped
+
+      button.btn.btn-success.btn-lg(onclick="createleague()")
