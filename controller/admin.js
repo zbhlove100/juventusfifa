@@ -1,5 +1,9 @@
 var mysqlclient = require('../utils/mysqlutils.js')
 var async = require('async')
+var objectutils = require('../utils/objectutils.js')
+var _ = require("underscore")._;
+var moment = require('moment');
+
 function sessionandrend(req,res,params,passauth){
   if(passauth){
     req.session.user_id = params.username;
@@ -66,7 +70,7 @@ exports.createleague = function(req,res){
     queryobj,function(err,rows){
       if (err || !rows || rows.affectedRows === 0) {
           console.log("mysql err:"+err)
-          passauth = false;
+          
           return res.send({"status":"error"})
       }
       res.send({"status":"Success"})
@@ -81,7 +85,7 @@ exports.getleagues = function(req,res){
     queryobj,function(err,rows){
       if (err || !rows || rows.affectedRows === 0) {
           console.log("mysql err:"+err)
-          passauth = false;
+          
           return res.send({"status":"error"})
       }
       
@@ -106,7 +110,7 @@ exports.getgroups = function(req,res){
     queryobj,function(err,rows){
       if (err || !rows || rows.affectedRows === 0) {
           console.log("mysql err:"+err)
-          passauth = false;
+          
           return res.send({"status":"error"})
       }
       
@@ -123,7 +127,7 @@ exports.addgroup = function(req,res){
     queryobj,function(err,rows){
       if (err || !rows || rows.affectedRows === 0) {
           console.log("mysql err:"+err)
-          passauth = false;
+          
           return res.send({"status":"error"})
       }
       res.send({"status":"Success"})
@@ -140,7 +144,7 @@ exports.savegroup = function(req,res){
     queryobj,function(err,rows){
       if (err || !rows || rows.affectedRows === 0) {
           console.log("mysql err:"+err)
-          passauth = false;
+          
           return res.send({"status":"error"})
       }
       var groupid = rows[0].id;
@@ -151,7 +155,7 @@ exports.savegroup = function(req,res){
       mysqlclient.query(queryobj1,function(err,rows){
         if (err) {
             console.log("mysql err:"+err)
-            passauth = false;
+            
             return res.send({"status":"error"})
         }
         console.log("affectedRows:"+rows.affectedRows)
@@ -193,7 +197,7 @@ exports.createplayer = function(req,res){
     queryobj,function(err,rows){
       if (err || !rows || rows.affectedRows === 0) {
           console.log("mysql err:"+err)
-          passauth = false;
+          
           return res.send({"status":"error"})
       }
       res.send({"status":"Success"})
@@ -206,7 +210,7 @@ exports.getplayerlist = function(req,res){
   queryobj.params = {}
   mysqlclient.query(
     queryobj,function(err,rows){
-      if (err || !rows || rows.affectedRows === 0) {
+      if (err) {
           console.log("mysql err:"+err)
           passauth = false;
           return res.send({"status":"error"})
@@ -215,15 +219,209 @@ exports.getplayerlist = function(req,res){
     }
   )
 }
-exports.generatematchlist = function(req,res){
+
+exports.getbasicgroup = function(req,res){
+  var leagueid = req.body.leagueid;
+  var queryobj = {}
+  queryobj.sql = "select id as groupid,name as groupname from grouptable where league_id = :leagueid";
+  queryobj.params = {"leagueid":leagueid}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err) {
+          console.log("mysql err:"+err)
+          passauth = false;
+          return res.send({"status":"error"})
+      }
+      console.log("sql getbasicgroup" + rows)
+      res.send(rows)
+    }
+  )
+}
+exports.editmatchelement = function(req,res){
+
+  var matchid = req.body.matchid;
+  var now = moment();
+  var homes = 0;
+  var aways = 0;
+  var homegoal = parseInt(req.body.homescore) - parseInt(req.body.awayscore);
+  var awaygoal = parseInt(req.body.awayscore) - parseInt(req.body.homescore);
+  if(req.body.homescore>req.body.awayscore){
+    homes =3;
+  }
+  if(req.body.homescore==req.body.awayscore){
+      homes =1;
+      aways = 1;
+  }
+  if(req.body.homescore<req.body.awayscore){
+      aways = 3;
+  }
+  var queryobj = {}
+  queryobj.sql = "UPDATE matchlist SET homescore=:homescore, awayscore=:awayscore, \n"+
+                  "homegetscore =:homegetscore,awaygetscore=:awaygetscore, \n"+
+                  "homegetgoal=:homegetgoal,awaygetgoal=:awaygetgoal,updatetime=:updatetime WHERE id=:matchid";
+  queryobj.params = {"matchid":matchid,
+                    "homescore":req.body.homescore,
+                    "awayscore":req.body.awayscore,
+                    "homegetscore":homes,
+                    "awaygetscore":aways,
+                    "homegetgoal":homegoal,
+                    "awaygetgoal":awaygoal,
+                    "updatetime":now.format('YYYY-MM-DD HH:mm:ss')}
+  
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err) {
+          console.log("mysql err:"+err)
+          passauth = false;
+          return res.send({"status":"error"})
+      }
+      var queryobj1 = {}
+      queryobj1.sql = "select grouptable_id as groupid,homeplayerid,awayplayerid from matchlist where id = :matchid";
+      queryobj1.params = {"matchid":matchid}
+      mysqlclient.query(
+        queryobj1,function(err,rows){
+          if (err) {
+              console.log("mysql err:"+err)
+              passauth = false;
+              return res.send({"status":"error"})
+          }
+          var homeplayerid = rows[0].homeplayerid;
+          var awayplayerid = rows[0].awayplayerid;
+          var groupid = rows[0].groupid;
+          var queryobj2 = {}
+          queryobj2.sql = "update groupplayer set score =( \n"+
+                          "select sum(A.score) as score from ( \n"+
+                          "select sum(homegetscore) as score  from matchlist where homeplayerid = :playerid1  union all \n"+
+                          "select sum(awaygetscore) as score  from matchlist where awayplayerid = :playerid2 \n"+
+                          ") as A \n"+
+                          ") where grouptable_id = :groupid and player_id = :playerid3";
+          console.log(queryobj2.sql)
+          queryobj2.params = {"playerid1":homeplayerid,"playerid2":homeplayerid,"playerid3":homeplayerid,"groupid":groupid}
+          mysqlclient.query(
+            queryobj2,function(err,rows){
+              if (err) {
+                  console.log("mysql err:"+err)
+                  passauth = false;
+                  return res.send({"status":"error"})
+              }
+              queryobj2.params = {"playerid1":awayplayerid,"playerid2":awayplayerid,"playerid3":awayplayerid,"groupid":groupid}
+              mysqlclient.query(
+                queryobj2,function(err,rows){
+                  if (err) {
+                      console.log("mysql err:"+err)
+                      passauth = false;
+                      return res.send({"status":"error"})
+                  }
+                  res.send({"status":"success"})
+                  
+                }
+              )
+            }
+          )
+     }
+    )
+   
+    }
+  )
+}
+exports.getagenda = function(req,res){
   var groupid = req.body.groupid;
   var leagueid = req.body.leagueid;
   var queryobj = {}
-  queryobj.sql = "select a.name as playername,a.id as playerid,a.qq as qq,b.grouptable_id as groupid  \n"+
+  queryobj.sql = "select id as matchid,grouptable_id as groupid,homeplayerid,homeplayername,awayplayerid,awayplayername,homescore,awayscore \n"+
+                  "from matchlist where grouptable_id = :groupid";
+  queryobj.params = {"groupid":groupid}
+  var result = {"members":[],"agenda":[]}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err) {
+          console.log("mysql err:"+err)
+          return res.send({"status":"error"})
+      }
+      result.agenda = rows;
+      var queryobj1 = {}
+      queryobj1.sql = "select b.grouptable_id as groupid, a.name as playername,a.id as playerid,a.qq as qq  \n"+
                     "from player a,groupplayer b where a.id = b.player_id and b.grouptable_id = :groupid";
+      queryobj1.params = {"groupid":groupid}
+
+      mysqlclient.query(
+        queryobj1,function(err1,rows1){
+          if (err) {
+              console.log("mysql err:"+err1)
+              
+              return res.send({"status":"error"})
+          }
+          result.members = rows1;
+          res.send(result)
+        })
+
+      
+    }
+  )
+
+
+}
+exports.generateagenda = function(req,res){
+  var groupid = req.body.groupid;
+  var leagueid = req.body.leagueid;
+  var queryobj = {}
+  queryobj.sql = "delete from matchlist where grouptable_id = :groupid";
   /*queryobj.sql = "select g.name as groupname,g.id as groupid from grouptable  g where g.league_id = :leagueid"*/
-  queryobj.params = {"leagueid":leagueid}
+  queryobj.params = {"groupid":groupid}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+     if (err) {
+            console.log("mysql err:"+err)
+            return res.send({"status":"error"})
+        }
+
+    var queryobj1 = {}
+    queryobj1.sql = "select b.grouptable_id as groupid, a.name as playername,a.id as playerid,a.qq as qq  \n"+
+                      "from player a,groupplayer b where a.id = b.player_id and b.grouptable_id = :groupid";
+    /*queryobj.sql = "select g.name as groupname,g.id as groupid from grouptable  g where g.league_id = :leagueid"*/
+    queryobj1.params = {"groupid":groupid}
+    mysqlclient.query(
+      queryobj1,function(err,rows){
+        if (err || !rows || rows.affectedRows === 0) {
+            console.log("mysql err:"+err)
+            return res.send({"status":"error"})
+        }
+        var object1 = rows;
+        var object2 = objectutils.cloneJson(object1);
+        var attr = []
+
+        _.each(object1,function(obj,index){
+          _.each(object2,function(obj2,index2){
+            if(obj.playerid != obj2.playerid){
+              var n = [leagueid,groupid,obj.playerid,obj.playername,obj2.playerid,obj2.playername]
+              attr.push(n);
+            }
+          })
+          
+        })
 
 
+        
+        
+        var pool = mysqlclient.getpool();
+        var queryobj2 = {}
+        pool.getConnection(function (err, connection) {
+
+          if (err) {
+              throw err;
+          }
+          queryobj2.sql = "insert matchlist (league_id,grouptable_id,homeplayerid,homeplayername,awayplayerid,awayplayername) values" + connection.escape(attr);
+          connection.query(queryobj2.sql, function(err, results) {
+            if (err) {
+              console.log("mysql err:"+err)
+              return res.send({"status":"error"})
+            }
+            return res.send({"status":"success"})
+          })
+        })
+        //res.send(rows)
+      }
+    )
+  })
 
 }

@@ -7,7 +7,7 @@ var admincontroller = require('../controller/admin.js')
 router.get('/',filter.authorize, function(req, res) {
   //res.render('login', { title: 'login page' });
   params = getparams.generateparams(req);
-  res.render('admin',params)
+  res.render('playerlist',params)
 });
 router.get('/playerlist',filter.authorize, function(req, res) {
   //res.render('login', { title: 'login page' });
@@ -42,6 +42,7 @@ router.get('/editleague',filter.authorize, function(req,res){
 	res.render('editleague',params)
 });
 router.get('/getgroups',filter.authorize, admincontroller.getgroups);
+router.post('/getbasicgroup',filter.authorize, admincontroller.getbasicgroup);
 router.post('/addgroup',filter.authorize, admincontroller.addgroup);
 router.post('/savegroup',filter.authorize, admincontroller.savegroup);
 
@@ -51,8 +52,10 @@ router.get('/editagenda',filter.authorize, function(req,res){
   params.leaguename = req.query.name;
   res.render('editagenda',params)
 });
-router.post('/generatematchlist',filter.authorize, admincontroller.generatematchlist);
+router.post('/generateagenda',filter.authorize, admincontroller.generateagenda);
 
+router.post('/getagenda',filter.authorize, admincontroller.getagenda);
+router.post('/editmatchelement',filter.authorize, admincontroller.editmatchelement);
 
 
 module.exports = router;

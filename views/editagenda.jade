@@ -3,21 +3,179 @@ block content
   link(rel='stylesheet', href='/stylesheets/admindashboard.css')
   script.
     var lgid = "!{leagueid}"
-    function generatematchlist(group){
+    var groupnode = [];
+    function generateagenda(){
+      var groupid = $("#renctgroupname").val()
       $.ajax({
-          url:"/admin/generatematchlist",
+          url:"/admin/generateagenda",
           type:"POST",
-          data:{"groupname":group,"leagueid":lgid},
+          data:{"groupid":groupid,"leagueid":lgid},
           dataType:"json",
           success:function(data){
+            getagenda(groupid)
+            }
+          })
+    }
+    var matchlisttemplate = "<tr class='{trclass}'><td>{no}</td><td>{homeplayer} <-> {awayplayer}</td><td>{score}</td><td>"+
+    "<button class='btn btn-warining' onclick='editmatchelement(\"{matchid}:{homeplayerid}:{awayplayerid}\")'>Edit</button></td></tr>";
+    function getagenda(group){
+      $.ajax({
+          url:"/admin/getagenda",
+          type:"POST",
+          data:{"groupid":group,"leagueid":lgid},
+          dataType:"json",
+          success:function(data){
+            var memberlist = data.members;
+            var agenda = data.agenda;
+            $("#agendatable>tbody").empty();
+            if(agenda.length == 0){
+             return false;
+            }
+            var headtr = "<tr><td class='agendatdname_unneed'>###</td>";
+            $.each(memberlist,function(index,value){
+              headtr = headtr + "<td class='agendatdname'>" + value.playername + "</td>"
+              })
+            headtr = headtr + "</td>";
+            $("#agendatable>tbody").append(headtr);
             
+            $.each(memberlist,function(index,value){
+              var tabletr =  "<tr>";
+              tabletr = tabletr + "<td class='agendatdname'>" + value.playername + "</td>"
+              $.each(memberlist,function(i,v){
+                if(value.playerid == v.playerid){
+                  tabletr = tabletr + "<td class='agendatdname_unneed'>###</td>"
+                }{
+                  $.each(agenda,function(ai,av){
+                    if(av.homeplayerid == value.playerid&&av.awayplayerid == v.playerid){
+                      if(av.homescore == -1){
+                        tabletr = tabletr + "<td class='agendatdname_unfinish'>未赛</td>"
+                      }else{
+                        tabletr = tabletr + "<td>" + av.homescore + "-" + av.awayscore + "</td>"
+                      }
+                    }
+                  })
+                }
+                  
+                })
+              tabletr = tabletr + "</td>";
+              $("#agendatable>tbody").append(tabletr);
+              })
+            $("#matchlisttable>tbody").empty();
+            $.each(agenda,function(index,v){
+                var score = "no";
+                var trclass = ""
+                if(v.homescore!=-1){
+                  score = v.homescore+"-"+v.awayscore;
+                  trclass = "success"
+                }
+                var matchtr = matchlisttemplate.replace('{no}',index)
+                                                .replace('{homeplayer}',v.homeplayername)
+                                                .replace('{awayplayer}',v.awayplayername)
+                                                .replace('{score}',score)
+                                                .replace('{trclass}',trclass) 
+                                                .replace('{matchid}',v.matchid)
+                                                .replace('{homeplayerid}',v.homeplayerid)
+                                                .replace('{awayplayerid}',v.awayplayerid)
+                $("#matchlisttable>tbody").append(matchtr);
+              })
+
+            }
+          })
+    }
+    function editmatchelement(matchid){
+      var ids = matchid.split(":")
+      $("#editmatchmodel input[type=text]").val("");
+      $("#editmatchmodel #hiddenmatchid").val(ids[0]);
+      $("#editmatchmodel #hiddenhomeplayerid").val(ids[1]);
+      $("#editmatchmodel #hiddenawayplayerid").val(ids[2]);
+      $("#editmatchmodel").modal('show');
+    }
+    function savematchelement(){
+      var homescore = $.trim($("#homescore").val())
+      var awayscore = $.trim($("#awayscore").val())
+      var matchid = $("#hiddenmatchid").val()
+      if(homescore!=""&&awayscore!=""){
+
+        $.ajax({
+          url:"/admin/editmatchelement",
+          type:"POST",
+          data:{"matchid":matchid,
+                "homescore":parseInt(homescore),
+                "awayscore":parseInt(awayscore),
+                "homeplayerid":$("#hiddenhomeplayerid").val(),
+                "awayplayerid":$("#hiddenawayplayerid").val()},
+          dataType:"json",
+          success:function(data){
+            $("#editmatchmodel").modal('hide');
+            var groupid = $("#renctgroupname").val()
+            getagenda(groupid)
+
+          }
+        })
+      }else{
+        alert("输入完整信息!")
+      }
+    }
+    var groupblocktemplate = "<div class='col-sm-2'><button class='btn btn-default' onclick='selectgroup(\"{groupid}\")'>"+
+                              "{groupnum} 组</button></div>";
+    var loadgroup = function(leagueid){
+      $.ajax({
+          url:"/admin/getbasicgroup",
+          type:"POST",
+          data:{"leagueid":lgid},
+          dataType:"json",
+          success:function(data){ 
+            groupnode = data;
+            $.each(data,function(index,value){
+              
+              var gpblock = groupblocktemplate.replace('{groupid}',value.groupid).replace('{groupnum}',value.groupname);
+              $("#grouplistpanel").append(gpblock)
+            })
+            if(data.length>0){
+              selectgroup(data[0].groupid);
+            }
           }
           })
     }
+
+    function selectgroup(groupid){
+      getagenda(groupid);
+
+      $.each(groupnode,function(index,value){
+          if(value.groupid == groupid){
+            $("#renctgroup").empty().html(value.groupname+" 组")
+            $("#renctgroupname").val(groupid)
+          }
+
+        })
+    }
     $(function(){
-      
-      
+      loadgroup();
       })
+  .modal.fade#editmatchmodel
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal')
+            span(aria-hidden='true') &times;
+            span.sr-only Close
+          h4.modal-title#modeltitle 
+        .modal-body
+          form#insertplayer.form-horizontal(role="form")
+              input#hiddenmatchid(type="hidden" value="")
+              input#hiddenhomeplayerid(type="hidden" value="")
+              input#hiddenawayplayerid(type="hidden" value="")
+              .form-group
+                label.col-sm-2.control-label#homeplayername(for="homescore") 主队
+                .col-sm-6
+                  input#homescore.form-control(type="text" placeholder="Enter number")
+              .form-group
+                label.col-sm-2.control-label#awayplayername(for="awayscore") 客队
+                .col-sm-6
+                  input#awayscore.form-control(type="text" placeholder="Enter number")
+        .modal-footer
+          button.btn.btn-default(type='button', data-dismiss='modal') Close
+          button.btn.btn-primary(type='button' onclick="savematchelement()") Save changes
   .container-fluid
     .row
       include adminsidebar
@@ -33,16 +191,22 @@ block content
             label.col-sm-2.control-label(for="playerqq") 赛制
             .col-sm-10
               p.form-control-static 双循环
-          .form-group
-            label.col-sm-2.control-label(for="playerqq")
-            .col-sm-2
-              
+        #grouplistpanel.row(style="margin-bottom:15px;")
+        input#renctgroupname(type="hidden" value="0")     
         .row
           .col-xs-12
             .panel.panel-default
-              .panel-heading Group A
-                button.btn.btn-primary.pull-right(type="button" onclick="generatematchlist('A')") 生成赛程
+              .panel-heading#renctgroup Group A
               .panel-body
-                table.table.table-striped
+                button.btn.btn-primary(type="button" onclick="generateagenda()") 生成赛程
+                table.table.text-center.table-bordered#agendatable(style="table-layout:fixed")
+                  tbody
+                table.table.table-striped#matchlisttable
+                  thead
+                    th #
+                    th 对阵
+                    th 比分
+                    th
+                  tbody
 
       button.btn.btn-success.btn-lg(onclick="createleague()")

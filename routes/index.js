@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var admincontroller = require('../controller/admin.js')
+var indexcontroller = require('../controller/index.js')
 var getparams = require('../utils/convertparams')
 
 /* GET home page. */
@@ -22,4 +23,6 @@ router.post('/dologin', admincontroller.dologin);
 
 /* GET logout page. */
 router.get('/logout', admincontroller.dologout);
+
+router.get('/getrecentmatch', indexcontroller.getrecentmatch);
 module.exports = router;

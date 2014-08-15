@@ -15,26 +15,26 @@ block content
           .panel-body(style="background-color: #E8E2E6")
             .row
               .col-xs-6.col-sm-3
-                .matchresultcard
-                  .row.matchresultteam
-                    .col-xs-8
-                      p zhangbohan
-                    .col-xs-4
-                      p 9
-                  .row
-                    .col-xs-12.vsfont
-                      strong VS                    
-                  .row.matchresultteam
-                    .col-xs-8
-                      p 体感效果
-                    .col-xs-4
-                      p 6
+                .matchresultcard#card0
+                  //- .row.matchresultteam
+                  //-   .col-xs-8
+                  //-     p zhangbohan
+                  //-   .col-xs-4
+                  //-     p 9
+                  //- .row
+                  //-   .col-xs-12.vsfont
+                  //-     strong VS                    
+                  //- .row.matchresultteam
+                  //-   .col-xs-8
+                  //-     p 体感效果
+                  //-   .col-xs-4
+                  //-     p 6
               .col-xs-6.col-sm-3
-                .matchresultcard
+                .matchresultcard#card1
               .col-xs-6.col-sm-3
-                .matchresultcard
+                .matchresultcard#card2
               .col-xs-6.col-sm-3
-                .matchresultcard
+                .matchresultcard#card3
 
     .row
       .col-xs-12
@@ -69,9 +69,36 @@ block content
                     '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' +
                     '{substitue}' +
                    '</div>';
+      var cardtemplate ='<div class="row matchresultteam">'+
+                            '<div class="col-xs-8"><p>{homeplayername}</p></div>'+
+                            '<div class="col-xs-4"><p>{homescore}</p></div>'+
+                          '</div><div class="row"><div class="col-xs-12 vsfont"><strong>VS </strong></div></div>'+
+                          '<div class="row matchresultteam"><div class="col-xs-8"><p>{awayplayername}</p></div>'+
+                            '<div class="col-xs-4"><p>{awayscore}</p></div></div>';
       function alert_info(message,infoclass){
         var template1 = info_template.replace('{substitue}',message).replace('{infoclass}',infoclass)
         $("#alertInfo").html(template1)
+      }
+      var recentsize = 4;
+      var getrecentmatch = function(){
+        $.ajax({
+          url:"/getrecentmatch",
+          type:"GET",
+          dataType:"json",
+          success:function(data){ 
+
+            for(var i=0;i<recentsize;i++){
+              console.log(data[i])
+              var homescore = data[i].homescore == -1? "未开赛":data[i].homescore;
+              var awayscore = data[i].awayscore == -1? "未开赛":data[i].awayscore;
+              var card = cardtemplate.replace('{homeplayername}',data[i].homeplayername)
+                                      .replace('{awayplayername}',data[i].awayplayername)
+                                      .replace('{homescore}',homescore)
+                                      .replace('{awayscore}',awayscore)
+              $("#card"+i).html(card)                         
+            }
+          }
+          })
       }
       $(function(){
         var username="#{userid}";
@@ -79,5 +106,6 @@ block content
         if(username){
           $("#welcomeusername").html(username)
         }
+        getrecentmatch()
       })
 

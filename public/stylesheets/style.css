@@ -27,3 +27,14 @@
 	font-size: 18px;
 	line-height: 25px;
 }
+.agendatdname{
+	background-color: #D0E68F;
+	margin: 2px;
+}
+.agendatdname_unfinish{
+	background-color: #BBCCEE;
+	margin: 2px;
+}
+.agendatdname_unneed{
+	background-color: #424242;
+}
