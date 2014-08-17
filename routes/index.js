@@ -25,4 +25,7 @@ router.post('/dologin', admincontroller.dologin);
 router.get('/logout', admincontroller.dologout);
 
 router.get('/getrecentmatch', indexcontroller.getrecentmatch);
+
+router.post('/getscoreboard', indexcontroller.getscoreboard);
+
 module.exports = router;

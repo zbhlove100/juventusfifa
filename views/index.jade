@@ -100,6 +100,27 @@ block content
           }
           })
       }
+      var getscoreboard = function(){
+        $.ajax({
+          url:"/getscoreboard",
+          type:"POST",
+          data:{"leagueid":0},
+          dataType:"json",
+          success:function(data){ 
+            var tempdata = {};
+            $.each(data,function(index,value){
+
+               if(tempdata[value.groupname] == undefined){
+                  tempdata[value.groupname] =[]
+                  tempdata[value.groupname].push(value);
+               }else{
+                  tempdata[value.groupname].push(value);
+               }
+              })
+            $.each(tempdata,function(index,value){
+              })
+          })
+      }
       $(function(){
         var username="#{userid}";
         console.log("@@@@"+username)
