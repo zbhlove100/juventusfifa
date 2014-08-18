@@ -123,6 +123,8 @@ block content
                }
               })
             $.each(tempdata,function(index,value){
+              console.log(value)
+              if(value != undefined){
                 var adddiv = leaguetemplate.replace('{leaguename}',value[0].leaguename)
                                             .replace('{leaguename2}',value[0].leaguename)
                                            .replace('{leagueid1}',value[0].leagueid)
@@ -141,7 +143,8 @@ block content
                   $("#league"+v.leagueid+"navdiv").append(li)
                   })
                 showgrouptable(value[0].leagueid,value[0].groupid)
-              })
+              }
+            })
           }
         })
       }
