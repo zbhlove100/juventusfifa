@@ -140,7 +140,7 @@ block content
     }
     var loadgroup = function(leagueid){
       $.ajax({
-          url:"/admin/getgroups?leagueid=1",
+          url:"/admin/getgroups?leagueid="+leagueid,
           type:"GET",
           dataType:"json",
           success:function(data){ 
@@ -154,6 +154,7 @@ block content
                   tempdata[value.groupname].push(value);
                }
               })
+            console.log(data)
             $.each(tempdata,function(index,value){
               if(value != undefined){
                 var gpblock = groupblocktemplate.replace('{groupnum1}',index).replace('{groupnum2}',index);
@@ -178,12 +179,12 @@ block content
       include adminsidebar
       .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2
         input#leagueid(type="hidden" value="#{leagueid}")
-        h1.page-header 赛事管理
+        h1.page-header League Management
         .row
           .col-xs-4.col-xs-offset-1
             form#insertplayer.form-horizontal(role="form")
               .form-group
-                label.col-sm-2.control-label(for="playername") 名字
+                label.col-sm-2.control-label(for="playername") Name
                 .col-sm-10
                   p.form-control-static #{leaguename}
               .form-group
@@ -191,9 +192,9 @@ block content
                 .col-sm-10
                   p.form-control-static 双循环
               .form-group
-                label.col-sm-2.control-label(for="playerqq") 小组
+                label.col-sm-2.control-label(for="playerqq") Groups
                 .col-sm-2
-                  button.btn.btn-primary(type="button" onclick="addgroup()") 添加
+                  button.btn.btn-primary(type="button" onclick="addgroup()") ADD
             .row
               p Group list
             #grouplistpanel.row
@@ -206,10 +207,10 @@ block content
                 thead
                   tr
                     th #
-                    th 选手
+                    th Player name
                     th qq
                     th
-                      button.btn.btn-success(onclick="savegroup()") 保存
+                      button.btn.btn-success(onclick="savegroup()") save
                 tbody
 
           .col-xs-4.col-xs-offset-1
@@ -217,11 +218,11 @@ block content
               thead
                 tr
                   th 
-                  th 选手
+                  th Player name
                   th qq
               tbody
             .col-xs-4.col-xs-offset-4
-              button.btn.btn-success(onclick="addmembertogroup()") <= 添加
+              button.btn.btn-success(onclick="addmembertogroup()") <= ADD
             .col-xs-10.col-xs-offset-2
               ul.pagination#memberpagination
       button.btn.btn-success.btn-lg(onclick="createleague()")
