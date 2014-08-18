@@ -17,7 +17,7 @@ block content
           })
     }
     var matchlisttemplate = "<tr class='{trclass}'><td>{no}</td><td>{homeplayer} <-> {awayplayer}</td><td>{score}</td><td>"+
-    "<button class='btn btn-warining' onclick='editmatchelement(\"{matchid}:{homeplayerid}:{awayplayerid}\")'>Edit</button></td></tr>";
+    "<button class='btn btn-warining' onclick='editmatchelement(\"{matchid}:{homeplayerid}:{awayplayerid}\")'>修改</button></td></tr>";
     function getagenda(group){
       $.ajax({
           url:"/admin/getagenda",
@@ -175,16 +175,16 @@ block content
                   input#awayscore.form-control(type="text" placeholder="Enter number")
         .modal-footer
           button.btn.btn-default(type='button', data-dismiss='modal') Close
-          button.btn.btn-primary(type='button' onclick="savematchelement()") Save changes
+          button.btn.btn-primary(type='button' onclick="savematchelement()") 保存
   .container-fluid
     .row
       include adminsidebar
       .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2
         input#leagueid(type="hidden" value="#{leagueid}")
-        h1.page-header League Management
+        h1.page-header 赛程详细管理
         form#insertplayer.form-horizontal(role="form")
           .form-group
-            label.col-sm-2.control-label(for="playername") Name
+            label.col-sm-2.control-label(for="playername") 名字
             .col-sm-10
               p.form-control-static #{leaguename}
           .form-group

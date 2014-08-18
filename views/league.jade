@@ -58,11 +58,11 @@ block content
           button.close(type='button', data-dismiss='modal')
             span(aria-hidden='true') &times;
             span.sr-only Close
-          h4.modal-title New League
+          h4.modal-title 新赛事
         .modal-body
           form#insertplayer.form-horizontal(role="form")
               .form-group
-                label.col-sm-2.control-label(for="playername") Name
+                label.col-sm-2.control-label(for="playername") 名字
                 .col-sm-10
                   input#leaguename.form-control(type="text" placeholder="Enter name")
               .form-group
@@ -77,7 +77,7 @@ block content
         include adminsidebar
         .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
           h1.page-header League Management
-            button.btn.btn-success.pull-right(onclick="showAddLeaguePage()") Add League
+            button.btn.btn-success.pull-right(onclick="showAddLeaguePage()") 添加赛事
           .row.placeholders
             .col-xs-6.col-sm-3
               img(src='/images/fifalogo.jpg', alt='soccer' height="100px") 
@@ -85,15 +85,15 @@ block content
               span.vsfont 40
             .col-xs-3.col-sm-3
    
-          h2.sub-header Play list
+          h2.sub-header 赛事列表
           .table-responsive
             table.table.table-striped#leaguelisttable
               thead
                 tr
                   th #
-                  th league name
-                  th mode
-                  th status
+                  th 赛事名字
+                  th 赛制
+                  th 状态
                   th
                   th
               tbody

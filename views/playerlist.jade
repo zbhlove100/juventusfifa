@@ -50,20 +50,20 @@ block content
             .col-xs-3.col-sm-3
               form#insertplayer(role="form")
                 .form-group.text-left
-                  label(for="playername") Play name
+                  label(for="playername") 选手名字
                   input#playername.form-control(type="text" placeholder="Enter name")
                 .form-group.text-left
                   label(for="playerqq") QQ
                   input#playerqq.form-control(type="text" placeholder="Enter name")
-              button.btn.btn-success(onclick="addplayer()") Add Player
+              button.btn.btn-success(onclick="addplayer()") 添加选手
                      
-          h2.sub-header Play list
+          h2.sub-header 选手列表
           .table-responsive
             table.table.table-striped#playerlisttable
               thead
                 tr
                   th #
-                  th Player name
+                  th 选手名字
                   th qq
                   th Played match
               tbody
