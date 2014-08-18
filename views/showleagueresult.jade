@@ -4,23 +4,11 @@ block content
   script.
     var lgid = "!{leagueid}"
     var groupnode = [];
-    function generateagenda(){
-      var groupid = $("#renctgroupname").val()
-      $.ajax({
-          url:"/admin/generateagenda",
-          type:"POST",
-          data:{"groupid":groupid,"leagueid":lgid},
-          dataType:"json",
-          success:function(data){
-            getagenda(groupid)
-            }
-          })
-    }
     var matchlisttemplate = "<tr class='{trclass}'><td>{no}</td><td>{homeplayer} <-> {awayplayer}</td><td>{score}</td><td>"+
-    "<button class='btn btn-warining' onclick='editmatchelement(\"{matchid}:{homeplayerid}:{awayplayerid}\")'>Edit</button></td></tr>";
+    "</td></tr>";
     function getagenda(group){
       $.ajax({
-          url:"/admin/getagenda",
+          url:"/getagenda",
           type:"POST",
           data:{"groupid":group,"leagueid":lgid},
           dataType:"json",
@@ -28,6 +16,7 @@ block content
             var memberlist = data.members;
             var agenda = data.agenda;
             $("#agendatable>tbody").empty();
+            $("#matchlisttable>tbody").empty();
             if(agenda.length == 0){
              return false;
             }
@@ -60,7 +49,7 @@ block content
               tabletr = tabletr + "</td>";
               $("#agendatable>tbody").append(tabletr);
               })
-            $("#matchlisttable>tbody").empty();
+            
             $.each(agenda,function(index,v){
                 var score = "no";
                 var trclass = ""
@@ -82,45 +71,12 @@ block content
             }
           })
     }
-    function editmatchelement(matchid){
-      var ids = matchid.split(":")
-      $("#editmatchmodel input[type=text]").val("");
-      $("#editmatchmodel #hiddenmatchid").val(ids[0]);
-      $("#editmatchmodel #hiddenhomeplayerid").val(ids[1]);
-      $("#editmatchmodel #hiddenawayplayerid").val(ids[2]);
-      $("#editmatchmodel").modal('show');
-    }
-    function savematchelement(){
-      var homescore = $.trim($("#homescore").val())
-      var awayscore = $.trim($("#awayscore").val())
-      var matchid = $("#hiddenmatchid").val()
-      if(homescore!=""&&awayscore!=""){
 
-        $.ajax({
-          url:"/admin/editmatchelement",
-          type:"POST",
-          data:{"matchid":matchid,
-                "homescore":parseInt(homescore),
-                "awayscore":parseInt(awayscore),
-                "homeplayerid":$("#hiddenhomeplayerid").val(),
-                "awayplayerid":$("#hiddenawayplayerid").val()},
-          dataType:"json",
-          success:function(data){
-            $("#editmatchmodel").modal('hide');
-            var groupid = $("#renctgroupname").val()
-            getagenda(groupid)
-
-          }
-        })
-      }else{
-        alert("输入完整信息!")
-      }
-    }
     var groupblocktemplate = "<div class='col-sm-2'><button class='btn btn-default' onclick='selectgroup(\"{groupid}\")'>"+
                               "{groupnum} 组</button></div>";
     var loadgroup = function(leagueid){
       $.ajax({
-          url:"/admin/getbasicgroup",
+          url:"/getbasicgroup",
           type:"POST",
           data:{"leagueid":lgid},
           dataType:"json",
@@ -152,34 +108,9 @@ block content
     $(function(){
       loadgroup();
       })
-  .modal.fade#editmatchmodel
-    .modal-dialog
-      .modal-content
-        .modal-header
-          button.close(type='button', data-dismiss='modal')
-            span(aria-hidden='true') &times;
-            span.sr-only Close
-          h4.modal-title#modeltitle 
-        .modal-body
-          form#insertplayer.form-horizontal(role="form")
-              input#hiddenmatchid(type="hidden" value="")
-              input#hiddenhomeplayerid(type="hidden" value="")
-              input#hiddenawayplayerid(type="hidden" value="")
-              .form-group
-                label.col-sm-2.control-label#homeplayername(for="homescore") 主队
-                .col-sm-6
-                  input#homescore.form-control(type="text" placeholder="Enter number")
-              .form-group
-                label.col-sm-2.control-label#awayplayername(for="awayscore") 客队
-                .col-sm-6
-                  input#awayscore.form-control(type="text" placeholder="Enter number")
-        .modal-footer
-          button.btn.btn-default(type='button', data-dismiss='modal') Close
-          button.btn.btn-primary(type='button' onclick="savematchelement()") Save changes
   .container-fluid
     .row
-      include adminsidebar
-      .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2
+      .col-sm-10.col-sm-offset-1.col-md-10.col-md-offset-1
         input#leagueid(type="hidden" value="#{leagueid}")
         h1.page-header League Management
         form#insertplayer.form-horizontal(role="form")
@@ -198,7 +129,6 @@ block content
             .panel.panel-default
               .panel-heading#renctgroup Group A
               .panel-body
-                button.btn.btn-primary(type="button" onclick="generateagenda()") 生成赛程
                 table.table.text-center.table-bordered#agendatable(style="table-layout:fixed")
                   tbody
                 table.table.table-striped#matchlisttable

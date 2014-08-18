@@ -243,22 +243,33 @@ exports.editmatchelement = function(req,res){
   var now = moment();
   var homes = 0;
   var aways = 0;
+  var homewin = 0;
+  var awaywin = 0;
+  var equalmatch = 0;
+  var homelose =0;
+  var awaylose = 0;
   var homegoal = parseInt(req.body.homescore) - parseInt(req.body.awayscore);
   var awaygoal = parseInt(req.body.awayscore) - parseInt(req.body.homescore);
   if(req.body.homescore>req.body.awayscore){
     homes =3;
+    homewin =1;
+    awaylose =1;
   }
   if(req.body.homescore==req.body.awayscore){
       homes =1;
       aways = 1;
+      equalmatch = 1;
   }
   if(req.body.homescore<req.body.awayscore){
       aways = 3;
+      awaywin =1;
+      homelose =1;
   }
   var queryobj = {}
   queryobj.sql = "UPDATE matchlist SET homescore=:homescore, awayscore=:awayscore, \n"+
                   "homegetscore =:homegetscore,awaygetscore=:awaygetscore, \n"+
-                  "homegetgoal=:homegetgoal,awaygetgoal=:awaygetgoal,updatetime=:updatetime WHERE id=:matchid";
+                  "homegetgoal=:homegetgoal,awaygetgoal=:awaygetgoal,updatetime=:updatetime, \n"+
+                  "homewin=:homewin,awaywin=:awaywin,equal=:equalmatch,homelose=:homelose,awaylose=:awaylose WHERE id=:matchid";
   queryobj.params = {"matchid":matchid,
                     "homescore":req.body.homescore,
                     "awayscore":req.body.awayscore,
@@ -266,6 +277,11 @@ exports.editmatchelement = function(req,res){
                     "awaygetscore":aways,
                     "homegetgoal":homegoal,
                     "awaygetgoal":awaygoal,
+                    "homewin":homewin,
+                    "awaywin":awaywin,
+                    "homelose":homelose,
+                    "awaylose":awaylose,
+                    "equalmatch":equalmatch,
                     "updatetime":now.format('YYYY-MM-DD HH:mm:ss')}
   
   mysqlclient.query(
@@ -293,10 +309,54 @@ exports.editmatchelement = function(req,res){
                           "select sum(A.score) as score from ( \n"+
                           "select sum(homegetscore) as score  from matchlist where homeplayerid = :playerid1  union all \n"+
                           "select sum(awaygetscore) as score  from matchlist where awayplayerid = :playerid2 \n"+
-                          ") as A \n"+
-                          ") where grouptable_id = :groupid and player_id = :playerid3";
-          console.log(queryobj2.sql)
-          queryobj2.params = {"playerid1":homeplayerid,"playerid2":homeplayerid,"playerid3":homeplayerid,"groupid":groupid}
+                          ") as A ), \n"+
+                          "totalmatch = (\n"+
+                          "select sum(A.matchnum) as matchnum from (\n"+
+                          "select count(*) as matchnum  from matchlist where homeplayerid = :playerid3 and homescore != -1  union all \n"+
+                          "select count(*) as matchnum  from matchlist where awayplayerid = :playerid4 and homescore != -1 \n"+
+                          ") as A ),\n"+
+                          "totalwin = (\n"+
+                          "select sum(A.win) as win from (\n"+
+                          "select sum(homewin) as win  from matchlist where homeplayerid = :playerid5  union all \n"+
+                          "select sum(awaywin) as win  from matchlist where awayplayerid = :playerid6 \n"+
+                          ") as A),\n"+
+                          "totalequal = (\n"+
+                          "select sum(A.equal) as equal from (\n"+
+                          "select sum(equal) as equal  from matchlist where homeplayerid = :playerid7  union all \n"+
+                          "select sum(equal) as equal  from matchlist where awayplayerid = :playerid8\n"+
+                          ") as A),\n"+
+                          "totallose = (\n"+
+                          "select sum(A.lose) as lose from (\n"+
+                          "select sum(homelose) as lose  from matchlist where homeplayerid = :playerid9  union all \n"+
+                          "select sum(awaylose) as lose  from matchlist where awayplayerid = :playerid10\n"+
+                          ") as A),\n"+
+                          "totalgoal = (\n"+
+                          "select sum(A.totalgoal) as totalgoal from (\n"+
+                          "select sum(homescore) as totalgoal  from matchlist where homeplayerid = :playerid11 and homescore != -1  union all \n"+
+                          "select sum(awayscore) as totalgoal  from matchlist where awayplayerid = :playerid12 and awayscore != -1\n"+
+                          ") as A),\n"+
+                          "totalgetgoal = (\n"+
+                          "select sum(A.getgoal) as getgoal from (\n"+
+                          "select sum(homegetgoal) as getgoal  from matchlist where homeplayerid = :playerid13   union all \n"+
+                          "select sum(awaygetgoal) as getgoal  from matchlist where awayplayerid = :playerid14\n"+
+                          ") as A)\n"+
+                          "where grouptable_id = :groupid and player_id = :playerid15";
+          queryobj2.params = {"playerid1":homeplayerid,
+                              "playerid2":homeplayerid,
+                              "playerid3":homeplayerid,
+                              "playerid4":homeplayerid,
+                              "playerid5":homeplayerid,
+                              "playerid6":homeplayerid,
+                              "playerid7":homeplayerid,
+                              "playerid8":homeplayerid,
+                              "playerid9":homeplayerid,
+                              "playerid10":homeplayerid,
+                              "playerid11":homeplayerid,
+                              "playerid12":homeplayerid,
+                              "playerid13":homeplayerid,
+                              "playerid14":homeplayerid,
+                              "playerid15":homeplayerid,
+                              "groupid":groupid}
           mysqlclient.query(
             queryobj2,function(err,rows){
               if (err) {
@@ -304,7 +364,22 @@ exports.editmatchelement = function(req,res){
                   passauth = false;
                   return res.send({"status":"error"})
               }
-              queryobj2.params = {"playerid1":awayplayerid,"playerid2":awayplayerid,"playerid3":awayplayerid,"groupid":groupid}
+              queryobj2.params = {"playerid1":awayplayerid,
+                              "playerid2":awayplayerid,
+                              "playerid3":awayplayerid,
+                              "playerid4":awayplayerid,
+                              "playerid5":awayplayerid,
+                              "playerid6":awayplayerid,
+                              "playerid7":awayplayerid,
+                              "playerid8":awayplayerid,
+                              "playerid9":awayplayerid,
+                              "playerid10":awayplayerid,
+                              "playerid11":awayplayerid,
+                              "playerid12":awayplayerid,
+                              "playerid13":awayplayerid,
+                              "playerid14":awayplayerid,
+                              "playerid15":awayplayerid,
+                              "groupid":groupid}
               mysqlclient.query(
                 queryobj2,function(err,rows){
                   if (err) {

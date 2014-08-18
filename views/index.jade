@@ -4,9 +4,9 @@ block content
   //-   div.container-fluid
   //-     a.navbar-brand(href="#") Brand
 
-  div.container
-    div.row
-      div.col-xs-12
+  .container#maincontainer
+    .row
+      .col-xs-12
         h1 Match result
     .row
       .col-xs-12
@@ -42,10 +42,9 @@ block content
           .panel-heading Group A
           .panel-body
             table.table.table-striped
-              tr
+              thead
                 th NAME
-                th USER TEAM
-                th MATCH NUMBER
+                th 比赛场数
                 th 胜
                 th 平
                 th 负 
@@ -55,7 +54,6 @@ block content
                 th 积分 
               tr
                 td A
-                td blo
                 td container
                 td A
                 td blo
@@ -100,26 +98,85 @@ block content
           }
           })
       }
-      var getscoreboard = function(){
+      var leaguetemplate = "<div class='row'><div class='col-xs-12'><div class='panel panel-default'>"+
+                           "<div class='panel-heading'>{leaguename}<a class='pull-right' href='/showleagueresult?leagueid={leagueid4}&leaguename={leaguename2}'>查看完整比赛结果</a></div><div class='panel-body' id='league{leagueid1}goupdiv'>"+
+                           "<ul class='nav nav-pills nav-justified' role='tablist' id='league{leagueid2}navdiv'></ul>"+
+                           "<table class='table' id='league{leagueid3}table'>"+
+                           "<thead><th>#</th><th>选手</th><th>比赛场数</th><th>胜</th><th>平</th><th>负</th><th> 进球 </th><th>失球</th><th>净胜球</th><th>积分</th>"+
+                           "</thead><tbody></tbody></table>"+
+                           "</div></div></div></div>";
+      var leaguenavtpl = '<li id="li{leagueid1}{groupid1}" role="presentation"  class="{active}"><a href="javaScript:showgrouptable({leagueid},{groupid})">{groupname}</a></li>';
+      var getleagueandgroup = function(){
         $.ajax({
-          url:"/getscoreboard",
-          type:"POST",
-          data:{"leagueid":0},
+          url:"/getleagueandgroup",
+          type:"GET",
           dataType:"json",
           success:function(data){ 
             var tempdata = {};
             $.each(data,function(index,value){
 
-               if(tempdata[value.groupname] == undefined){
-                  tempdata[value.groupname] =[]
-                  tempdata[value.groupname].push(value);
+               if(tempdata[value.leagueid] == undefined){
+                  tempdata[value.leagueid] =[]
+                  tempdata[value.leagueid].push(value);
                }else{
-                  tempdata[value.groupname].push(value);
+                  tempdata[value.leagueid].push(value);
                }
               })
             $.each(tempdata,function(index,value){
+                var adddiv = leaguetemplate.replace('{leaguename}',value[0].leaguename)
+                                            .replace('{leaguename2}',value[0].leaguename)
+                                           .replace('{leagueid1}',value[0].leagueid)
+                                            .replace('{leagueid2}',value[0].leagueid)
+                                            .replace('{leagueid3}',value[0].leagueid)
+                                            .replace('{leagueid4}',value[0].leagueid)
+                $("#maincontainer").append(adddiv)
+                $.each(value,function(i,v){
+                  var active = i==0?"active":"";
+                  var li = leaguenavtpl.replace('{leagueid}',v.leagueid)
+                                        .replace('{groupid}',v.groupid)
+                                        .replace('{leagueid1}',v.leagueid)
+                                        .replace('{groupid1}',v.groupid)
+                                        .replace('{groupname}',v.groupname)
+                                        .replace('{active}',active)
+                  $("#league"+v.leagueid+"navdiv").append(li)
+                  })
+                showgrouptable(value[0].leagueid,value[0].groupid)
               })
-          })
+          }
+        })
+      }
+      var scoretabletpl = "<tr class='{class}'><td>{no}</td><td>{name}</td><td>{totalmatch}</td><td>{totalwin}</td><td>{totalequal}</td>"+
+                          "<td>{totallose}</td><td>{totalgoal}</td><td>{totallosegoal}</td><td>{totalgetgoal}</td><td>{score}</td></tr>";
+      function showgrouptable(leagueid,groupid,x){
+        $.ajax({
+          url:"/getscoreboard",
+          type:"POST",
+          data:{"groupid":groupid},
+          dataType:"json",
+          success:function(data){ 
+            $("#league"+leagueid+"table >tbody").empty()
+            $.each(data,function(index,value){
+              var classtype = index<2?"success":""
+              var tr = scoretabletpl.replace('{name}',value.playername)
+                                    .replace('{totalmatch}',value.totalmatch)
+                                    .replace('{totalwin}',value.totalwin)
+                                    .replace('{totalequal}',value.totalequal)
+                                    .replace('{totallose}',value.totallose)
+                                    .replace('{totalgoal}',value.totalgoal)
+                                    .replace('{totallosegoal}',value.totallosegoal)
+                                    .replace('{totalgetgoal}',value.totalgetgoal)
+                                    .replace('{score}',value.score)
+                                    .replace('{no}',index+1)
+                                    .replace('{class}',classtype)
+
+               $("#league"+leagueid+"table >tbody").append(tr)
+              })
+            
+            $("#league"+leagueid+"navdiv >li").removeClass('active');
+            $("#li"+leagueid+groupid).addClass('active')
+          }
+        })
+        
       }
       $(function(){
         var username="#{userid}";
@@ -128,5 +185,6 @@ block content
           $("#welcomeusername").html(username)
         }
         getrecentmatch()
+        getleagueandgroup()
       })
 

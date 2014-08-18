@@ -26,6 +26,18 @@ router.get('/logout', admincontroller.dologout);
 
 router.get('/getrecentmatch', indexcontroller.getrecentmatch);
 
+router.get('/getleagueandgroup', indexcontroller.getleagueandgroup);
+
+
 router.post('/getscoreboard', indexcontroller.getscoreboard);
+
+router.get('/showleagueresult', function(req, res) {
+  //res.render('login', { title: 'login page' });
+  res.render('showleagueresult', { leagueid: req.query.leagueid,leaguename: req.query.leaguename });
+});
+
+router.post('/getbasicgroup', indexcontroller.getbasicgroup);
+
+router.post('/getagenda', indexcontroller.getagenda);
 
 module.exports = router;
