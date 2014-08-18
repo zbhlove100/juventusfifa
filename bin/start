@@ -1,0 +1,27 @@
+#!/bin/bash
+
+PATH=$PATH:/usr/local/bin
+
+project_home=$(dirname $(cd "$(dirname "$0")"; pwd))
+env="production"  # [development, test, production]
+port=3000
+forever="${project_home}/node_modules/forever/bin/forever"
+webapp="${project_home}/app.js"
+
+path_log="/home/zhangbohan/myLearn/webWrok"
+path_pid="/home/zhangbohan/myLearn/webWrok"
+webapp_log="${path_log}/webapp.ct.log"
+webapp_pid="${path_pid}/webapp.pid"
+
+echo 'Running webapp with forever.'
+echo "port: ${port}"
+echo "log path: ${path_log}"
+echo "pid path: ${path_pid}"
+if [ ! -d "$path_log" ]; then
+  mkdir -p "$path_log"
+fi
+if [ ! -d "$path_pid" ]; then
+  mkdir -p "$path_pid"
+fi
+
+NODE_ENV="$env" PORT="$port" "$forever" start -a -l "$webapp_log" --pidFile "$webapp_pid"  "$webapp"

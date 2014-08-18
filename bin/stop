@@ -1,0 +1,10 @@
+#!/bin/bash
+
+PATH=$PATH:/usr/local/bin
+
+project_home=$(dirname $(cd "$(dirname "$0")"; pwd))
+path_scripts="${project_home}"
+forever="${project_home}/node_modules/forever/bin/forever"
+
+echo 'Stopping webapp with forever.'
+"$forever" stop "$path_scripts"/app.js
