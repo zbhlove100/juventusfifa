@@ -28,6 +28,7 @@ router.get('/getrecentmatch', indexcontroller.getrecentmatch);
 
 router.get('/getleagueandgroup', indexcontroller.getleagueandgroup);
 
+router.get('/getprepareleague', indexcontroller.getprepareleague);
 
 router.post('/getscoreboard', indexcontroller.getscoreboard);
 
@@ -39,5 +40,6 @@ router.get('/showleagueresult', function(req, res) {
 router.post('/getbasicgroup', indexcontroller.getbasicgroup);
 
 router.post('/getagenda', indexcontroller.getagenda);
+
 
 module.exports = router;

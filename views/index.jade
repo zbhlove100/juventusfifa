@@ -10,6 +10,18 @@ block content
     .row
       .col-xs-12
         .panel.panel-default
+          .panel-heading 报名比赛
+          .panel-body(style="background-color: #E8E2E6")
+            table.table.table-striped#signuptable
+              thead
+                th 比赛
+                th des
+                th
+              tbody
+
+    .row
+      .col-xs-12
+        .panel.panel-default
           .panel-heading 最近的比赛
           .panel-body(style="background-color: #E8E2E6")
             .row
@@ -86,7 +98,6 @@ block content
           success:function(data){ 
 
             for(var i=0;i<recentsize;i++){
-              console.log(data[i])
               var homescore = data[i].homescore == -1? "未开赛":data[i].homescore;
               var awayscore = data[i].awayscore == -1? "未开赛":data[i].awayscore;
               var card = cardtemplate.replace('{homeplayername}',data[i].homeplayername)
@@ -94,6 +105,24 @@ block content
                                       .replace('{homescore}',homescore)
                                       .replace('{awayscore}',awayscore)
               $("#card"+i).html(card)                         
+            }
+          }
+          })
+      }
+      var preparetpl = "<tr><td>{leaguename}</td><td>{description}</td><td><a href='/signupleague?leagueid={leagueid}' class='btn btn-primary'>报名</a></td></tr>";
+      var getprepareleague = function(){
+        $.ajax({
+          url:"/getprepareleague",
+          type:"GET",
+          dataType:"json",
+          success:function(data){ 
+            $("#signuptable >tbody").empty()
+            for(var i=0;i<recentsize;i++){
+              var card = preparetpl.replace('{leaguename}',data[i].leaguename)
+                                    .replace('{leagueid}',data[i].leagueid)
+                                    .replace('{description}',"")
+                                      
+              $("#signuptable >tbody").append(card)                         
             }
           }
           })
@@ -181,6 +210,7 @@ block content
         })
         
       }
+
       $(function(){
         var username="#{userid}";
         console.log("@@@@"+username)
@@ -189,5 +219,6 @@ block content
         }
         getrecentmatch()
         getleagueandgroup()
+        getprepareleague()
       })
 

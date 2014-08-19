@@ -1,0 +1,8 @@
+{
+	"databasetype":"mysql",
+	"database_url":"rdsvmmvj2jfjaqr.mysql.rds.aliyuncs.com",
+	"database_user":"zhangbohan",
+	"database_pass":"zbhhmm1985MM",
+	"database_name":"nodejs",
+	"connectionLimit":"5"
+}

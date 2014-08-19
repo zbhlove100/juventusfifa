@@ -1,8 +1,8 @@
 {
 	"databasetype":"mysql",
-	"database_url":"rdsvmmvj2jfjaqr.mysql.rds.aliyuncs.com",
-	"database_user":"zhangbohan",
-	"database_pass":"zbhhmm1985MM",
-	"database_name":"nodejs",
+	"database_url":"127.0.0.1",
+    "database_user":"root",
+    "database_pass":"zbhxzz",
+    "database_name":"juventus",
 	"connectionLimit":"5"
 }

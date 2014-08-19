@@ -22,6 +22,23 @@ exports.getrecentmatch = function(req,res){
     }
   )
 }
+exports.getprepareleague = function(req,res){
+  var queryobj = {}
+  queryobj.sql = "select id as leagueid,name as leaguename,description from league where status = 'Prepare' \n";
+  queryobj.params = {}
+  
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err) {
+          console.log("mysql err:"+err)
+          
+          return res.send({"status":"error"})
+      }
+      
+      res.send(rows)
+    }
+  )
+}
 exports.getleagueandgroup = function(req,res){
   var queryobj = {}
   queryobj.sql = "select id as leagueid from league where status = 'Active'"
