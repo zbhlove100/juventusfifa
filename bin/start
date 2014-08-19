@@ -4,7 +4,7 @@ PATH=$PATH:/usr/local/bin
 
 project_home=$(dirname $(cd "$(dirname "$0")"; pwd))
 env="production"  # [development, test, production]
-port=3000
+port=80
 forever="${project_home}/node_modules/forever/bin/forever"
 webapp="${project_home}/app.js"
 
