@@ -1,11 +1,15 @@
 var express = require('express');
 var router = express.Router();
+var filter = require('./filter')
+var getparams = require('../utils/convertparams')
 
-/* GET users listing. */
+
+router.use(filter.userRequired);
+
+
 router.get('/', function(req, res) {
-  res.send('respond with a resource');
+  //res.render('login', { title: 'login page' });
+  res.render('userindex')
 });
-router.get('/list', function(req, res) {
-  res.send('user list');
-});
+
 module.exports = router;

@@ -4,3 +4,14 @@ CREATE DATABASE `juventus` CHARACTER SET utf8 COLLATE utf8_general_ci
 
 2014-08-19
 ALTER TABLE `juventus`.`league` ADD COLUMN `description` VARCHAR(545) NULL DEFAULT NULL  AFTER `mode` ;
+
+2014-08-20
+ALTER TABLE `juventus`.`user` ADD COLUMN `loginname` VARCHAR(45) NULL DEFAULT NULL  AFTER `qq` , ADD COLUMN `email` VARCHAR(45) NULL DEFAULT NULL  AFTER `loginname` , ADD COLUMN `profile_image_url` VARCHAR(45) NULL DEFAULT NULL  AFTER `email` , ADD COLUMN `location` VARCHAR(45) NULL DEFAULT NULL  AFTER `profile_image_url` , ADD COLUMN `create_at` TIMESTAMP NULL DEFAULT NULL  AFTER `location` , ADD COLUMN `status` VARCHAR(45) NULL DEFAULT NULL  AFTER `create_at` ;
+
+ALTER TABLE `juventus`.`player` ADD COLUMN `user_id` BIGINT(20) NULL DEFAULT NULL  AFTER `nickname` , ADD COLUMN `status` VARCHAR(45) NULL DEFAULT NULL  AFTER `user_id` , 
+  ADD CONSTRAINT `fk_player_user1`
+  FOREIGN KEY (`user_id` )
+  REFERENCES `juventus`.`user` (`id` )
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION
+, ADD INDEX `fk_player_user1` (`user_id` ASC) ;

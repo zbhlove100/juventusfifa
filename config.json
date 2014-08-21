@@ -4,5 +4,6 @@
     "database_user":"root",
     "database_pass":"zbhxzz",
     "database_name":"juventus",
-	"connectionLimit":"5"
+	"connectionLimit":"5",
+	"captchapath":"/home/zhangbohan/myLearn/webWrok/juventusfifa/public/images/captcha/"
 }

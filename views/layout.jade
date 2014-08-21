@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title= title
+    title #{title}
     script(src='/js/jquery11.1.min.js')
     link(rel='stylesheet', href='/stylesheets/style.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-3.2.0-dist/css/bootstrap.min.css')
@@ -31,18 +31,28 @@ html
               a(href='http://182.92.192.217:2368/') 博客
             li
               a(href='#') BBS
-            -if (userid)
+            -if (user)
               li 
                 a Welcome 
-                  Strong #{username}
-              li
-                a(href='/admin')
-                  button.btn.btn-success.btn-xs 管理中心
+                  Strong #{user.username}
+              -if(user.isadmin)
+                li
+                  a(href='/admin')
+                    button.btn.btn-success.btn-xs 管理中心
               li
                 a(href='/logout')
-                  button.btn.btn-warning.btn-xs 登出
+                  button.btn.btn-danger.btn-xs 登出
             -else
               li
-                a(href='/admin') 管理中心
+                a(href='/login')
+                  button.btn.btn-success.btn-xs 登录
+              li
+                a(href='/admin')
+                    button.btn.btn-warning.btn-xs 管理员登录
+
+              
+              
+            
+              
     block content
     include footer

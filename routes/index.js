@@ -3,26 +3,47 @@ var router = express.Router();
 var admincontroller = require('../controller/admin.js')
 var indexcontroller = require('../controller/index.js')
 var getparams = require('../utils/convertparams')
+var passport = require('passport');
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  var params = {title: 'Express'}
-  if(req.session.user_id){
-  	params = getparams.generateparams(req);
-  }
-  res.render('index', params);
+  var params = {title: '尤文图斯 - FIFA OL3'}
+
+  res.render('index',params);
 });
 
 /* GET login page. */
+router.get('/adminlogin', function(req, res) {
+  //res.render('login', { title: 'login page' });
+  res.render('adminlogin', { title: 'admin login' });
+});
 router.get('/login', function(req, res) {
   //res.render('login', { title: 'login page' });
-  res.render('login', { title: 'Login page' });
+  res.render('login', { title: 'user login' });
 });
 
-router.post('/dologin', admincontroller.dologin);
 
 /* GET logout page. */
-router.get('/logout', admincontroller.dologout);
+router.get('/logout', function(req, res){
+  req.logout();
+  req.session.destroy(function (err) {
+  	console.log(req.user)
+    res.redirect('/'); //Inside a callback… bulletproof!
+  });
+});
+router.post('/dologin',passport.authenticate('user', {
+        failureRedirect: '/login'
+    }), function(req, res) {
+  //res.render('login', { title: 'login page' });
+  res.render('userindex',{ title: '用户中心' })
+});
+
+router.get('/register', function(req, res) {
+  //res.render('login', { title: 'login page' });
+  res.render('register', { title: 'user register' });
+});
+
+router.get('/getcaptcha',indexcontroller.getcaptcha);
 
 router.get('/getrecentmatch', indexcontroller.getrecentmatch);
 

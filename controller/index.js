@@ -3,6 +3,10 @@ var async = require('async')
 var objectutils = require('../utils/objectutils.js')
 var _ = require("underscore")._;
 var moment = require('moment');
+var ccap = require('ccap');
+var fs = require('fs');
+var config = require('../config')
+var mkdirp = require('mkdirp');
 
 exports.getrecentmatch = function(req,res){
   var queryobj = {}
@@ -158,6 +162,50 @@ exports.getagenda = function(req,res){
       
     }
   )
+}
+exports.getcaptcha = function(req,res){
 
+ var captcha = ccap();
+
+  var ary = captcha.get();//ary[0] is captcha's text,ary[1] is captcha picture buffer.
+
+  var text = ary[0];
+
+  var buffer = ary[1];
+
+  var now = moment();
+  var staticpath ="/images/captcha/"
+  var dirname = config.captchapath +now.format('YYYYMMDD')
+  var returnname = staticpath + now.format('YYYYMMDD') +"/"+ now.format('YYYYMMDDmmss') +".bmp";
+  var filename = dirname +"/" + now.format('YYYYMMDDmmss') +".bmp";
+
+  /*fs.open('/tmp/tmpCaptcha.png',"a",0644,function(e,fd){
+    if(e) throw e;
+    fs.write(fd,buffer,function(e){
+        if(e) throw e;
+        fs.closeSync(fd);
+    })
+  })*/
+  mkdirp(dirname, function (err) {
+      if (err){
+        console.error(err)
+        throw err;
+      } 
+      console.log('create dir:'+dirname)
+      fs.writeFile(filename, buffer, 'binary', function (err) {
+              if (err){
+                console.log('error');
+                throw err;
+              } 
+              console.log('file saved');
+              var result = {}
+              result.text = text;
+              result.pic = returnname;
+              res.send(result);
+          });
+  });
+  
+   //res.end(buffer);
+   
 
 }

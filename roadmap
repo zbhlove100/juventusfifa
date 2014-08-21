@@ -1,5 +1,5 @@
 todolist:
 1.fix the index bug when no league;
 2.add transacion to the complicated sql
-3.improve the player managment moudule
+3.improve the player managment moudule => create user management
 4.change the password auth to use middleware(passport)

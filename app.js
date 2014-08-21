@@ -5,7 +5,10 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var session = require('cookie-session')
+/*var session = require('cookie-session')*/
+var session = require('express-session')
+var passport = require('passport')
+    , LocalStrategy = require('passport-local').Strategy;
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -14,23 +17,30 @@ var admin = require('./routes/admin')
 var expressValidator = require('express-validator')
 var app = express();
 
+var mysqlclient = require('./utils/mysqlutils.js')
+
+require('./utils/auth.js')(passport)
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(favicon());
 app.use(logger('dev'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(session({secret: 'UYG899',maxage:6000000}));
+app.use(session({secret: 'UYG899',cookie: { maxAge: 600000 }}));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(expressValidator());
-app.use('/', routes);
+
+
+
+app.use('/',routes);
 app.use('/users', users);
-/*app.get('/admin/login',admin.login);
-app.get('/admin/logout',admin.logout);*/
+
 app.use('/admin',admin);
 
 /// catch 404 and forward to error handler

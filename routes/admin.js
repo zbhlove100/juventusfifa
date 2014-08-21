@@ -3,59 +3,69 @@ var router = express.Router();
 var filter = require('./filter')
 var getparams = require('../utils/convertparams')
 var admincontroller = require('../controller/admin.js')
+var passport = require('passport');
 
-router.get('/',filter.authorize, function(req, res) {
+router.use(filter.adminRequired);
+router.get('/', function(req, res) {
   //res.render('login', { title: 'login page' });
-  params = getparams.generateparams(req);
-  res.render('playerlist',params)
-});
-router.get('/playerlist',filter.authorize, function(req, res) {
-  //res.render('login', { title: 'login page' });
-  params = getparams.generateparams(req);
-  res.render('playerlist',params)
+  res.render('playerlist')
 });
 
-router.post('/createplayer',filter.authorize, admincontroller.createplayer);
-
-router.get('/getplayerlist',filter.authorize, admincontroller.getplayerlist);
-
-router.get('/league',filter.authorize, function(req, res) {
+router.post('/dologin',passport.authenticate('admin', {
+        failureRedirect: '/adminlogin'
+    }), function(req, res) {
   //res.render('login', { title: 'login page' });
-  params = getparams.generateparams(req);
+  res.render('playerlist')
+});
+
+router.get('/playerlist', function(req, res) {
+  //res.render('login', { title: 'login page' });
+  var params ={}
+  res.render('playerlist',params)
+});
+/*router.post('/dologin', admincontroller.dologin);*/
+
+router.post('/createplayer', admincontroller.createplayer);
+
+router.get('/getplayerlist', admincontroller.getplayerlist);
+
+router.get('/league', function(req, res) {
+  //res.render('login', { title: 'login page' });
+  var params ={}
   res.render('league',params)
 });
 
-router.get('/addLeaguePage',filter.authorize, function(req, res) {
+router.get('/addLeaguePage', function(req, res) {
   //res.render('login', { title: 'login page' });
-  params = getparams.generateparams(req);
+  var params ={}
   res.render('addleague',params)
 });
 
-router.post('/createLeague',filter.authorize, admincontroller.createleague);
+router.post('/createLeague', admincontroller.createleague);
 
-router.get('/getleaguelist',filter.authorize, admincontroller.getleagues);
+router.get('/getleaguelist', admincontroller.getleagues);
 
-router.get('/editleague',filter.authorize, function(req,res){
-	params = getparams.generateparams(req);
+router.get('/editleague', function(req,res){
+	var params ={}
 	params.leagueid = req.query.id;
 	params.leaguename = req.query.name;
 	res.render('editleague',params)
 });
-router.get('/getgroups',filter.authorize, admincontroller.getgroups);
-router.post('/getbasicgroup',filter.authorize, admincontroller.getbasicgroup);
-router.post('/addgroup',filter.authorize, admincontroller.addgroup);
-router.post('/savegroup',filter.authorize, admincontroller.savegroup);
+router.get('/getgroups', admincontroller.getgroups);
+router.post('/getbasicgroup', admincontroller.getbasicgroup);
+router.post('/addgroup', admincontroller.addgroup);
+router.post('/savegroup', admincontroller.savegroup);
 
-router.get('/editagenda',filter.authorize, function(req,res){
-  params = getparams.generateparams(req);
+router.get('/editagenda', function(req,res){
+  var params ={}
   params.leagueid = req.query.id;
   params.leaguename = req.query.name;
   res.render('editagenda',params)
 });
-router.post('/generateagenda',filter.authorize, admincontroller.generateagenda);
+router.post('/generateagenda', admincontroller.generateagenda);
 
-router.post('/getagenda',filter.authorize, admincontroller.getagenda);
-router.post('/editmatchelement',filter.authorize, admincontroller.editmatchelement);
+router.post('/getagenda', admincontroller.getagenda);
+router.post('/editmatchelement', admincontroller.editmatchelement);
 
 
 module.exports = router;

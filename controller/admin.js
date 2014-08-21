@@ -57,10 +57,7 @@ exports.dologin = function(req, res,next){
     checkuser(req,res,authparams,sessionandrend)
  
 }
-exports.dologout = function(req,res,next){
-  req.session = null;
-  res.redirect('/');
-}
+
 exports.createleague = function(req,res){
   var mode = "double"
   var queryobj = {}
