@@ -35,8 +35,9 @@ html
             .form-group
               .col-sm-5
                 .input-group
-                  input.form-control(name='captchacode' placeholder='' onblur="checkcaptcha()")
-                  span.input-group-addon √ ×
+                  input.form-control#captchacode(name='captchacode' placeholder='' onblur="checkcaptcha()")
+                  span.input-group-addon#captharight(style="display:none") √
+                  span.input-group-addon#capthawrong(style="display:none") ×
                 
               .col-sm-5
                 a(href="javaScript:getcaptcha()")
@@ -72,7 +73,13 @@ html
         })
       }
       function checkcaptcha(){
-        alert(111)
+        if($("#captchacode").val()==$("#captchatext").val()){
+          $("captharight").show();
+          $("captharight").capthawrong();
+        }else{
+          $("captharight").show();
+          $("captharight").capthawrong();
+        }
       }
       $(function(){
         var err="#{error}";
