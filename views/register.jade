@@ -13,25 +13,25 @@ html
           <img src="/images/juventus.jpg" alt="..." class="img-rounded">
         div(class="col-xs-1")
         div(class="col-xs-5")
-          form.form-horizontal(role='form' action='/dologin' method='post')
+          form.form-horizontal#registerform(role='form' action='/doregister' method='post')
             .form-group
               h3(style="text-align:center") 用户注册
             .form-group
-              label.col-sm-2.control-label(for="username") 用户名
+              label.col-sm-2.control-label(for="username" ) 用户名
               .col-sm-10
-                input.form-control(name='username' placeholder='Username')
+                input.form-control(type="text" name='username' placeholder='Username' require)
             .form-group
               label.col-sm-2.control-label(for="playername") 密码
               .col-sm-10
-                input.form-control(name='username1' placeholder='Username')
+                input.form-control(type="password" name='password' placeholder='password' require)
             .form-group
               label.col-sm-2.control-label(for="playername") qq
               .col-sm-10
-                input.form-control(name='username2' placeholder='Username')
+                input.form-control(type="text" name='qq' placeholder='qq' require)
             .form-group
               label.col-sm-2.control-label(for="playername") Email
               .col-sm-10
-                input.form-control(name='username3' placeholder='Username')
+                input.form-control(type="text" name='email' placeholder='Email' require)
             .form-group
               .col-sm-5
                 .input-group
@@ -45,7 +45,7 @@ html
 
                 input#captchatext(type="hidden")
             .form-group
-              input.btn.btn-lg.btn-primary.btn-block(type='submit' value='注册')
+              input.btn.btn-lg.btn-primary.btn-block(onclick="subform()" value='注册')
             #alertInfo
 
 
@@ -73,13 +73,37 @@ html
         })
       }
       function checkcaptcha(){
-        if($("#captchacode").val()==$("#captchatext").val()){
-          $("captharight").show();
-          $("captharight").capthawrong();
+        var lowcase = $("#captchatext").val().toLowerCase();
+        if($("#captchacode").val()==$("#captchatext").val()||$("#captchacode").val()==lowcase){
+          console.log("right")
+          $("#captharight").show();
+          $("#capthawrong").hide();
+          return true;
         }else{
-          $("captharight").show();
-          $("captharight").capthawrong();
+          console.log("wrong")
+          $("#capthawrong").show();
+          $("#captharight").hide();
+          return false;
         }
+      }
+      function subform(){
+        var passcheck = true;
+        $("input[require]").each(function(index){
+            if($(this).val()=="")
+              
+              passcheck = false;
+          })
+        if(passcheck){
+          if(!checkcaptcha()){
+            alert("验证码错误")
+          }else{
+            $("#registerform").submit();
+          }
+          
+        }else{
+          alert("请输入全部资料")
+        }
+        
       }
       $(function(){
         var err="#{error}";

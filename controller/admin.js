@@ -4,7 +4,7 @@ var objectutils = require('../utils/objectutils.js')
 var _ = require("underscore")._;
 var moment = require('moment');
 
-function sessionandrend(req,res,params,passauth){
+/*function sessionandrend(req,res,params,passauth){
   if(passauth){
     req.session.user_id = params.username;
     req.session.user_name = params.username;
@@ -56,13 +56,13 @@ exports.dologin = function(req, res,next){
 
     checkuser(req,res,authparams,sessionandrend)
  
-}
+}*/
 
 exports.createleague = function(req,res){
   var mode = "double"
   var queryobj = {}
   queryobj.sql = "insert league(name,mode,status) values (:leaguename,:mode,:status)";
-  queryobj.params = {"leaguename":req.body.leaguename,"mode":mode,"status":"Active"}
+  queryobj.params = {"leaguename":req.body.leaguename,"mode":mode,"status":"Create"}
   mysqlclient.query(
     queryobj,function(err,rows){
       if (err || !rows || rows.affectedRows === 0) {
@@ -90,6 +90,52 @@ exports.getleagues = function(req,res){
     }
   )
 }
+exports.getleaguemessage = function(req,res){
+  var queryobj = {}
+  queryobj.sql = "select name,mode,id,status from league where id = :leagueid";
+  queryobj.params = {"leagueid":req.query.id}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err ) {
+          console.log("mysql err:"+err)
+          return res.send({"status":"error"})
+      }
+      var params ={}
+      params.leagueid = req.query.id;
+      params.leaguemessage = rows[0];
+      console.log(params)
+      res.render('leaguedetail',params)
+    }
+  )
+}
+
+exports.changeleaguesatus = function(req,res){
+  var queryobj = {}
+  queryobj.sql = "select code from leaguestatus where level = \n"+
+                 "(select B.level from leaguestatus B,league A where A.id =:leagueid and B.code = A.status)+1";
+  queryobj.params = {"leagueid":req.query.id}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err ) {
+          console.log("mysql err:"+err)
+          return res.send({"status":"error"})
+      }
+      queryobj.sql = "update league set status = :status where id = :leagueid;"
+      queryobj.params = {"leagueid":req.query.id,"status":rows[0].code}
+      mysqlclient.query(
+        queryobj,function(err,rows){
+          if (err ) {
+              console.log("mysql err:"+err)
+              return res.send({"status":"error"})
+          }
+          
+          res.redirect('/admin/leaguedetail?id='+req.query.id)
+        }
+      )
+    }
+  )
+}
+
 exports.getgroups = function(req,res){
   var leagueid = req.query.leagueid;
   

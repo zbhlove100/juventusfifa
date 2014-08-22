@@ -39,6 +39,11 @@ html
                 li
                   a(href='/admin')
                     button.btn.btn-success.btn-xs 管理中心
+              -else
+                li
+                  a(href='/users')
+                    button.btn.btn-success.btn-xs 用户中心
+
               li
                 a(href='/logout')
                   button.btn.btn-danger.btn-xs 登出

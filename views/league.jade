@@ -23,8 +23,9 @@ block content
       }
     }
     var trtemplate = "<tr><td>{no}</td><td>{leaguename}</td><td>{mode}</td><td>{status}</td>"+
-                    "<td><a class='btn btn-primary' href='/admin/editleague?id={leagueid}&name={leaguename2}'>Group</a></td>"+
-                    "<td><a class='btn btn-primary' href='/admin/editagenda?id={leagueid2}&name={leaguename3}'>赛程</a></td></tr>";
+                  "<td><a class='btn btn-primary' href='/admin/leaguedetail?id={leagueid}'>详细</a></td>";
+                    //- "<td><a class='btn btn-primary' href='/admin/editleague?id={leagueid}&name={leaguename2}'>Group</a></td>";
+                    //- "<td><a class='btn btn-primary' href='/admin/editagenda?id={leagueid2}&name={leaguename3}'>赛程</a></td></tr>";
     var getleagues = function(){
         $.ajax({
           url:"/admin/getleaguelist",
@@ -94,7 +95,6 @@ block content
                   th 赛事名字
                   th 赛制
                   th 状态
-                  th
                   th
               tbody
                 

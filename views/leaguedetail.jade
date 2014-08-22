@@ -1,0 +1,47 @@
+extends layout
+block content
+  link(rel='stylesheet', href='/stylesheets/admindashboard.css')
+  script.
+    var lid = #{leagueid}
+    
+  .container-fluid
+      .row
+        include adminsidebar
+        .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+          h1.page-header 赛事信息
+          .panel.panel-default
+            .panel-heading 用户信息
+            .panel-body(style="")
+              form.form-horizontal(role="form")
+                .form-group
+                  label.col-sm-2.control-label(for="playername") 名字
+                  .col-sm-10
+                    p.form-control-static #{leaguemessage.name}
+                .form-group
+                  label.col-sm-2.control-label(for="playerqq") 赛制
+                  .col-sm-10
+                    p.form-control-static 双循环
+                .form-group
+                  label.col-sm-2.control-label(for="playername") 状态
+                  - var dict = {"Create":"建立","Prepare":"报名中","Active":"比赛中","Finish":"结束",}
+                  - var status = dict[leaguemessage.status]
+                  .col-sm-10
+                    p.form-control-static= status
+                .form-group
+                  label.col-sm-2.control-label(for="playerqq") 分组
+                  .col-sm-10
+                    a.btn.btn-primary(href='/admin/editleague?id=#{leaguemessage.id}}&name={leaguename3}') 进入分组页面=>
+                .form-group
+                  label.col-sm-2.control-label(for="playerqq") 赛程
+                  .col-sm-10
+                    a.btn.btn-primary(href='/admin/editagenda?id=#{leaguemessage.id}&name={leaguename3}') 进入赛程页面=>
+                .form-group
+                  label.col-sm-2.control-label(for="playerqq") 操作
+                  .col-sm-10
+                    case leaguemessage.status
+                      when 'Crete'
+                        a.btn.btn-success(href='/admin/changeleaguesatus?id=#{leaguemessage.id}') 开始报名
+                      when 'Prepare'
+                        a.btn.btn-warning(href='/admin/changeleaguesatus?id=#{leaguemessage.id}') 开始比赛
+                      when 'Active'
+                        a.btn.btn-danger(href='/admin/changeleaguesatus?id=#{leaguemessage.id}') 结束比赛

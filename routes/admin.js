@@ -44,6 +44,8 @@ router.get('/addLeaguePage', function(req, res) {
 router.post('/createLeague', admincontroller.createleague);
 
 router.get('/getleaguelist', admincontroller.getleagues);
+router.get('/leaguedetail', admincontroller.getleaguemessage);
+router.get('/changeleaguesatus', admincontroller.changeleaguesatus);
 
 router.get('/editleague', function(req,res){
 	var params ={}

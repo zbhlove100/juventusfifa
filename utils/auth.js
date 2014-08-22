@@ -35,9 +35,10 @@ module.exports = function(passport){
   ));
   passport.use('user', new LocalStrategy(
     function (username, password, done) {      
+        var incodepass = new Buffer(password).toString('base64');
         var queryobj = {}
         queryobj.sql = "select id as userid,role,name as username from user where name = :username and password = :password and role = :role and status = 'Active'";
-        queryobj.params = {"username":username,"password":password,"role":"user"}
+        queryobj.params = {"username":username,"password":incodepass,"role":"user"}
         console.log(queryobj.sql)
         var passauth = false;
         mysqlclient.query(

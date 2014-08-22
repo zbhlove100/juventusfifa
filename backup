@@ -1,3 +1,10 @@
+league status list:
+Create
+Prepare
+Active
+Finish
+
+
 setup sql:
 CREATE DATABASE `juventus` CHARACTER SET utf8 COLLATE utf8_general_ci
 
@@ -15,3 +22,21 @@ ALTER TABLE `juventus`.`player` ADD COLUMN `user_id` BIGINT(20) NULL DEFAULT NUL
   ON DELETE NO ACTION
   ON UPDATE NO ACTION
 , ADD INDEX `fk_player_user1` (`user_id` ASC) ;
+
+
+ALTER TABLE `juventus`.`player` ADD COLUMN `location` VARCHAR(45) NULL DEFAULT NULL  AFTER `status` ;
+
+CREATE  TABLE IF NOT EXISTS `juventus`.`leaguestatus` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(45) NULL DEFAULT NULL ,
+  `level` INT(11) NULL DEFAULT NULL ,
+  `code` VARCHAR(45) NULL DEFAULT NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_bin;
+
+INSERT INTO leaguestatus (`name`, `level`, `code`) VALUES ('建立', 1, 'Create');
+INSERT INTO leaguestatus (`name`, `level`, `code`) VALUES ('报名中', 2, 'Prepare');
+INSERT INTO leaguestatus (`name`, `level`, `code`) VALUES ('比赛中', 3, 'Active');
+INSERT INTO leaguestatus (`name`, `level`, `code`) VALUES ('结束', 4, 'Finish');

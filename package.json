@@ -17,7 +17,7 @@
     "mysql-queues":"*",
     "async":"*",
     "moment":"*",
-    "express-session":"*",
+    "express-session":"~1.7.6",
     "passport":"*",
     "passport-local":"*",
     "express-validator":"*",

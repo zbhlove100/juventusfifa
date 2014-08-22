@@ -1,3 +1,148 @@
 extends layout
 block content
-	1111111111111111111111111
+  script.
+    var userid = #{user.userid}
+    var getusermessage = function(){
+      $.ajax({
+          url:"/users/getusermessage",
+          type:"POST",
+          data:{"userid":userid},
+          dataType:"json",
+          success:function(data){ 
+            var usermessage = data[0];
+            $("#username").html(usermessage.username)
+            $("#userqq").html(usermessage.userqq)
+            $("#useremail").html(usermessage.useremail)
+          }
+          })
+    }
+    var playertpl ="<tr><td>{no}</td><td>{playerid}</td><td>{playername}</td><td>{location}</td>"+
+                  "<td><button class='btn btn-primary' onclick='showleague({playerid2})'>赛事</button></td></tr>"
+    var getplayermessage = function(){
+      $.ajax({
+          url:"/users/getplayermessage",
+          type:"POST",
+          data:{"userid":userid},
+          dataType:"json",
+          success:function(data){ 
+            $("#playerlist >tbody").empty()
+            $.each(data,function(index,value){
+                var tr = playertpl.replace('{no}',index+1)
+                                  .replace('{playerid}',value.playerid)
+                                  .replace('{playername}',value.playername)
+                                  .replace('{location}',value.location)
+                                  .replace('{playerid2}',value.playerid)
+
+                $("#playerlist >tbody").append(tr)
+
+              })
+          }
+          })
+    }
+    function selectlocation(loca){
+      $("#playerlocation").val(loca)
+    }
+    function changepassword(){
+
+    }
+    function addplayer(){
+      var playername = $.trim($("#playername").val())
+      var location = $("#playerlocation").val()
+      if(playername =="" || location ==""){
+         alert("请输入全部资料")
+      }else{
+        $.ajax({
+          url:"/users/createplayer",
+          type:"POST",
+          data:{"playername":playername,"location":location,"userid":userid},
+          dataType:"json",
+          success:function(data){
+            $("#addplayermodel").modal('hide');
+            getplayermessage()
+          }
+          })
+      }
+    }
+    function showaddplayer(){
+      $("#insertleague input[type=text]").val("");
+      $("#addplayermodel").modal('show');
+    }
+    function showleague(uid){
+
+    }
+    $(function(){
+      getusermessage()
+      getplayermessage()
+      })
+  .modal.fade#addplayermodel
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal')
+            span(aria-hidden='true') &times;
+            span.sr-only Close
+          h4.modal-title 新游戏人物
+        .modal-body
+          form#insertplayer.form-horizontal(role="form")
+            .form-group
+              label.col-sm-2.control-label(for="playername") 名字
+              .col-sm-10
+                input#playername.form-control(type="text" placeholder="Enter name")
+            .form-group
+              label.col-sm-2.control-label(for="playername") 分区
+              .col-sm-4
+                input#playerlocation(type="text" disabled)
+              .col-sm-4
+                .btn-group
+                  button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+                    | 选择 
+                    span.caret
+                  ul.dropdown-menu(role='menu')
+                    li
+                      a(href='javaScript:selectlocation("华北网通")') 华北网通
+                    li
+                      a(href='javaScript:selectlocation("华东电信")') 华东电信
+                    li
+                      a(href='javaScript:selectlocation("华南电信")') 华南电信
+                    li
+                      a(href='javaScript:selectlocation("火星")') 火星
+
+        .modal-footer
+          button.btn.btn-default(type='button', data-dismiss='modal') Close
+          button.btn.btn-primary(type='button' onclick="addplayer()") Save changes
+  .container#usercontainer
+    .row
+      .col-xs-12
+        .panel.panel-default
+          .panel-heading 用户信息
+          .panel-body(style="")
+            form.form-horizontal(role="form")
+              .form-group
+                label.col-sm-2.control-label(for="playername") 名字
+                .col-sm-10
+                  p.form-control-static#username
+              .form-group
+                label.col-sm-2.control-label(for="playerqq") qq
+                .col-sm-10
+                  p.form-control-static#userqq
+              .form-group
+                label.col-sm-2.control-label(for="playerqq") email
+                .col-sm-10
+                  p.form-control-static#useremail
+              .form-group
+                .col-sm-10.col-sm-offset-2
+                  button.btn.btn-danger(onclick="changepassword()") 改密码
+    .row
+      .col-xs-12
+        .panel.panel-default
+          .panel-heading 游戏人物
+            button.btn.btn-primary.pull-right(onclick="showaddplayer()") 添加
+          .panel-body(style="")
+            table.table.table-striped#playerlist
+              thead
+                th
+                th 人物编号
+                th 人物名字
+                th 分区
+                th
+              tbody

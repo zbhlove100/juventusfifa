@@ -10,9 +10,7 @@ var session = require('express-session')
 var passport = require('passport')
     , LocalStrategy = require('passport-local').Strategy;
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
-var admin = require('./routes/admin')
+
 
 var expressValidator = require('express-validator')
 var app = express();
@@ -31,12 +29,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
-app.use(session({secret: 'UYG899',cookie: { maxAge: 600000 }}));
+app.use(session({secret: 'UYG899',cookie: { maxAge: 6000000,secure: false }}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(expressValidator());
 
 
+var routes = require('./routes/index');
+var users = require('./routes/users');
+var admin = require('./routes/admin')
 
 app.use('/',routes);
 app.use('/users', users);

@@ -43,6 +43,13 @@ router.get('/register', function(req, res) {
   res.render('register', { title: 'user register' });
 });
 
+router.post('/doregister', indexcontroller.doregister);
+
+router.get('/registerfinish', function(req, res) {
+  res.render('registerfinish');
+});
+
+
 router.get('/getcaptcha',indexcontroller.getcaptcha);
 
 router.get('/getrecentmatch', indexcontroller.getrecentmatch);

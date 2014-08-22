@@ -1,0 +1,28 @@
+head
+title 注册成功
+
+body
+  
+  div(id='messagediv' style='text-align:center; margin:0 auto;margin-top:100px;')
+    div(style='float:left;') !{message}!&nbsp;
+
+    div(style='float:left;')  注册成功,马上跳转到登录页面&nbsp;
+    div(style='float:left;')
+        span(id='jumpTo' style='color:red;float:left;') 3
+        span &nbsp;seconds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    div(style='float:left;') Go&nbsp;&nbsp;
+      a(href='/login') 登录
+block script
+script.
+
+    function countDown(secs,surl){
+      var jumpTo = document.getElementById('jumpTo');
+      jumpTo.innerHTML=secs;
+      if(--secs>0){
+        setTimeout("countDown("+secs+",'"+surl+"')",1000);
+      }else{
+        location.href=surl;
+      }
+    }
+
+    countDown(3,'/login');

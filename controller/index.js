@@ -7,6 +7,7 @@ var ccap = require('ccap');
 var fs = require('fs');
 var config = require('../config')
 var mkdirp = require('mkdirp');
+require('buffer')
 
 exports.getrecentmatch = function(req,res){
   var queryobj = {}
@@ -176,16 +177,8 @@ exports.getcaptcha = function(req,res){
   var now = moment();
   var staticpath ="/images/captcha/"
   var dirname = config.captchapath +now.format('YYYYMMDD')
-  var returnname = staticpath + now.format('YYYYMMDD') +"/"+ now.format('YYYYMMDDmmss') +".bmp";
-  var filename = dirname +"/" + now.format('YYYYMMDDmmss') +".bmp";
-
-  /*fs.open('/tmp/tmpCaptcha.png',"a",0644,function(e,fd){
-    if(e) throw e;
-    fs.write(fd,buffer,function(e){
-        if(e) throw e;
-        fs.closeSync(fd);
-    })
-  })*/
+  var returnname = staticpath + now.format('YYYYMMDD') +"/"+ now.format('YYYYMMDDmmss') +".jpg";
+  var filename = dirname +"/" + now.format('YYYYMMDDmmss') +".jpg";
   mkdirp(dirname, function (err) {
       if (err){
         console.error(err)
@@ -205,7 +198,29 @@ exports.getcaptcha = function(req,res){
           });
   });
   
-   //res.end(buffer);
-   
+}
 
+exports.doregister = function(req,res,next){
+  var name = req.body.username;
+  var password = req.body.password;
+  var qq = req.body.qq;
+  var email = req.body.email; 
+  if(password.length < 6){
+    res.render("register",{"error":"密码最少6位"})
+  }else{
+    password = new Buffer(password).toString('base64');
+  }
+  var queryobj = {}
+  queryobj.sql = "insert user(name,password,role,qq,email,status) values (:name,:password,'user',:qq,:email,:status)";
+  queryobj.params = {"name":name,"password":password,"qq":qq,"email":email,"status":"Active"}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err || !rows || rows.affectedRows === 0) {
+          console.log("mysql err:"+err)
+          
+          res.render("register",{"error":"发生错误"})
+      }
+      res.redirect("/registerfinish")
+    }
+  )
 }
