@@ -1,0 +1,47 @@
+.navbar.navbar-default.navbar-static-top(role='navigation')
+      .container
+        .navbar-header
+          button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+           img(src="/images/juventus.jpg" height="50px" width="50px")
+          //a.navbar-brand(href='#') Project name
+        .navbar-collapse.collapse
+          ul.nav.navbar-nav
+            li.active
+              a(href='/') 首页
+            li
+              a(href='#about') Recent match
+            li
+              a(href='#contact') Contact
+            
+          ul.nav.navbar-nav.navbar-right
+            li
+              a(href='http://182.92.192.217:2368/') 博客
+            li
+              a(href='#') BBS
+            -if (user!=undefined)
+              li 
+                a Welcome 
+                  Strong #{user.username}
+              -if(user.isadmin)
+                li
+                  a(href='/admin')
+                    button.btn.btn-success.btn-xs 管理中心
+              -else
+                li
+                  a(href='/users')
+                    button.btn.btn-success.btn-xs 用户中心
+
+              li
+                a(href='/logout')
+                  button.btn.btn-danger.btn-xs 登出
+            -else
+              li
+                a(href='/login')
+                  button.btn.btn-success.btn-xs 登录
+              li
+                a(href='/admin')
+                    button.btn.btn-warning.btn-xs 管理员登录

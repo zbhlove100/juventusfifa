@@ -50,7 +50,7 @@ block content
             })
       }
     }
-    var trtemplate = "<tr><td>{no}</td><td>{playername}</td><td>{qq}</td><td>"+
+    var trtemplate = "<tr><td>{no}</td><td>{playername}</td><td>"+
     "<button class='btn btn-warining' onclick='deletethismem(\"{delgno}:{delmno}\")'>-</button></td></tr>";
 
     function selectgroup(groupnum){
@@ -63,7 +63,6 @@ block content
             if(value.members){
               $.each(value.members,function(i,v){
               var membertr = trtemplate.replace('{playername}',v.playername)
-                                        .replace('{qq}',v.playerqq)
                                         .replace('{no}',i+1)
                                         .replace('{delgno}',index)
                                         .replace('{delmno}',i)
@@ -85,11 +84,11 @@ block content
     var totalmember = 0;
     var loadmembers = function(){
        $.ajax({
-          url:"/admin/getplayerlist",
+          url:"/admin/getplayerlist?leagueid="+lgid,
           type:"GET",
-          data:{},
           dataType:"json",
           success:function(data){
+            console.log(data)
             membersnode = data;
             totalmember = data.length;
             $("#memberpagination").empty();
@@ -104,7 +103,7 @@ block content
           })
     }
 
-    var playertemplate = "<tr><td><input type='checkbox' name='selectmemeber' value='{playerid}:{index}'></td><td>{playername}</td><td>{qq}</td></tr>";
+    var playertemplate = "<tr><td><input type='checkbox' name='selectmemeber' value='{playerid}:{index}'></td><td>{playername}</td><td>{username}</td></tr>";
 
     function changememberpage(num){
       $("#gourpeditpanel>tbody").empty()
@@ -112,7 +111,7 @@ block content
       var until = num*pagesize>totalmember?totalmember:num*pagesize;
       for(var i=from-1;i<until;i++){
         var value = membersnode[i];
-        var template1 = playertemplate.replace('{playerid}',value.playerid).replace('{index}',i).replace('{playername}',value.playername).replace('{qq}',value.playerqq);
+        var template1 = playertemplate.replace('{playerid}',value.playerid).replace('{index}',i).replace('{playername}',value.playername).replace('{username}',value.username);
         $("#gourpeditpanel>tbody").append(template1);
       }
       $("#memberpagination>li").removeClass("active");
@@ -207,8 +206,7 @@ block content
                 thead
                   tr
                     th #
-                    th Player name
-                    th qq
+                    th 游戏经理名字
                     th
                       button.btn.btn-success(onclick="savegroup()") save
                 tbody
@@ -218,8 +216,8 @@ block content
               thead
                 tr
                   th 
-                  th Player name
-                  th qq
+                  th 游戏经理名字
+                  th 用户名
               tbody
             .col-xs-4.col-xs-offset-4
               button.btn.btn-success(onclick="addmembertogroup()") <= ADD

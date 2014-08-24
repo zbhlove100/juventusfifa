@@ -21,7 +21,7 @@ exports.adminRequired = function (req, res, next) {
  */
 exports.userRequired = function (req, res, next) {
   if (!req.user) {
-    return res.send(403, 'forbidden!');
+    return res.redirect('/login');
   }
   next();
 };

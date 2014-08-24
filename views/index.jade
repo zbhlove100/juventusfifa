@@ -11,11 +11,11 @@ block content
       .col-xs-12
         .panel.panel-default
           .panel-heading 报名比赛
-          .panel-body(style="background-color: #E8E2E6")
+          .panel-body(style="background-color: #D06161")
             table.table.table-striped#signuptable
               thead
                 th 比赛
-                th des
+                th 备注
                 th
               tbody
 
@@ -109,7 +109,7 @@ block content
           }
           })
       }
-      var preparetpl = "<tr><td>{leaguename}</td><td>{description}</td><td><a href='/signupleague?leagueid={leagueid}' class='btn btn-primary'>报名</a></td></tr>";
+      var preparetpl = "<tr><td>{leaguename}</td><td>{description}</td><td><a href='/users/signupleague?leagueid={leagueid}' class='btn btn-primary'>报名</a></td></tr>";
       var getprepareleague = function(){
         $.ajax({
           url:"/getprepareleague",

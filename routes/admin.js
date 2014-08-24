@@ -27,7 +27,15 @@ router.get('/playerlist', function(req, res) {
 
 router.post('/createplayer', admincontroller.createplayer);
 
+router.post('/generateeliminationagenda', admincontroller.generateeliminationagenda);
+
+// router.post('/finishgroupstage', admincontroller.finishgroupstage);
+
 router.get('/getplayerlist', admincontroller.getplayerlist);
+
+router.get('/getsignplayerlist', admincontroller.getsignplayerlist);
+
+
 
 router.get('/league', function(req, res) {
   //res.render('login', { title: 'login page' });

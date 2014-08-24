@@ -1,0 +1,47 @@
+extends layout
+block content
+  script.
+    $(function(){
+
+      })
+
+  .container#maincontainer
+    .row
+      .col-xs-12
+        h1 赛事信息
+    .row
+      .col-xs-12
+        .panel.panel-default
+          .panel-heading 赛事信息
+          .panel-body(style="")
+            form.form-horizontal(role="form")
+              .form-group
+                label.col-sm-2.control-label(for="playername") 名字
+                .col-sm-10
+                  p.form-control-static #{league.name}
+              .form-group
+                label.col-sm-2.control-label(for="playerqq") 赛制
+                .col-sm-10
+                  p.form-control-static 双循环
+        .panel.panel-default
+          .panel-heading 你发游戏经理人
+          .panel-body(style="")
+            if issignup
+              h3 已经报名
+            else
+              table.table.table-striped#playerlist
+                thead
+                  th
+                  th 人物编号
+                  th 人物名字
+                  th 分区
+                  th
+                tbody
+                  each val,index in player
+                    tr
+                      td #{index+1}
+                      td #{val.playerid}
+                      td #{val.playername}
+                      td #{val.location}
+                      td 
+                        a.btn.btn-primary(href="/users/dosignup?playerid=#{val.playerid}&leagueid=#{league.leagueid}") 报名

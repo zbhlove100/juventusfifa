@@ -7,6 +7,7 @@ var passport = require('passport');
 
 /* GET home page. */
 router.get('/', function(req, res) {
+  console.log(req.user)
   var params = {title: '尤文图斯 - FIFA OL3'}
 
   res.render('index',params);
@@ -28,7 +29,9 @@ router.get('/logout', function(req, res){
   req.logout();
   req.session.destroy(function (err) {
   	console.log(req.user)
-    res.redirect('/'); //Inside a callback… bulletproof!
+    var params = {title: '尤文图斯 - FIFA OL3',user:null}
+
+    res.render('index',params);
   });
 });
 router.post('/dologin',passport.authenticate('user', {
@@ -62,8 +65,10 @@ router.post('/getscoreboard', indexcontroller.getscoreboard);
 
 router.get('/showleagueresult', function(req, res) {
   //res.render('login', { title: 'login page' });
-  res.render('showleagueresult', { leagueid: req.query.leagueid,leaguename: req.query.leaguename });
+  res.render('showleagueresult', { leagueid: req.query.leagueid});
 });
+
+
 
 router.post('/getbasicgroup', indexcontroller.getbasicgroup);
 

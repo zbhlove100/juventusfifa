@@ -149,6 +149,45 @@ block content
 
         })
     }
+    function showdiv(stage){
+      
+      if(stage == 'groupstage'){
+        $("#groupstage").show();
+        $("#eliminationstage").hide();
+        $("#cb1").addClass("active")
+        $("#cb2").removeClass("active")
+      }else if(stage == 'estage'){
+        $("#eliminationstage").show();
+        $("#groupstage").hide();
+        $("#cb2").addClass("active")
+        $("#cb1").removeClass("active")
+      }
+    }
+    //- function finishgroupstage(){
+    //-   $.ajax({
+    //-       url:"/admin/finishgroupstage",
+    //-       type:"POST",
+    //-       data:{"leagueid":lgid},
+    //-       dataType:"json",
+    //-       success:function(data){ 
+    //-         alert(data.status)
+            
+    //-       }
+    //-       })
+    //- }
+    function generatenextstage(){
+      $.ajax({
+          url:"/admin/generatenextstage",
+          type:"POST",
+          data:{"leagueid":lgid},
+          dataType:"json",
+          success:function(data){ 
+            groupnode = data;
+            
+          }
+          })
+    }
+    
     $(function(){
       loadgroup();
       })
@@ -191,21 +230,53 @@ block content
             label.col-sm-2.control-label(for="playerqq") 赛制
             .col-sm-10
               p.form-control-static 双循环
-        #grouplistpanel.row(style="margin-bottom:15px;")
-        input#renctgroupname(type="hidden" value="0")     
-        .row
-          .col-xs-12
-            .panel.panel-default
-              .panel-heading#renctgroup Group A
-              .panel-body
-                button.btn.btn-primary(type="button" onclick="generateagenda()") 生成赛程
-                table.table.text-center.table-bordered#agendatable(style="table-layout:fixed")
-                  tbody
-                table.table.table-striped#matchlisttable
-                  thead
-                    th #
-                    th 对阵
-                    th 比分
-                    th
-                  tbody
+          .form-group
+            label.col-sm-2.control-label(for="playerqq") 操作
+            .col-sm-10
+              button.btn.btn-danger(onclick="finishgroupstage()") 结束小组赛
+          .form-group
+            .row
+              .col-sm-12
+                ul.nav.nav-pills.nav-justified(role="tablist")
+                  li#cb1.active("presentation")
+                    a(href="javaScript:showdiv('groupstage')")  小组赛
+                  li#cb2("presentation") 
+                    a(href="javaScript:showdiv('estage')") 淘汰赛
+        #groupstage
+          #grouplistpanel.row(style="margin-bottom:15px;")
+          input#renctgroupname(type="hidden" value="0") 
+          .row.groupstage
+            .col-xs-12
+              .panel.panel-default
+                .panel-heading#renctgroup Group A
+                .panel-body
+                  button.btn.btn-primary(type="button" onclick="generateagenda()") 生成赛程
+                  table.table.text-center.table-bordered#agendatable(style="table-layout:fixed")
+                    tbody
+                  table.table.table-striped#matchlisttable
+                    thead
+                      th #
+                      th 对阵
+                      th 比分
+                      th
+                    tbody
+        #eliminationstage(style="display:none")
+          .row
+            .col-xs-12.elimination
+              .row
+                .col-xs-12
+                  button.btn.btn-warning(onclick="generatenextstage()") 生成下阶段赛程
+              .panel.panel-default
+                .panel-heading
+                .panel-body
+                  table.table.text-center.table-bordered#(style="table-layout:fixed")
+                    tbody
+                  table.table.table-striped
+                    thead
+                      th #
+                      th 对阵
+                      th 比分
+                      th
+                    tbody
+        
 

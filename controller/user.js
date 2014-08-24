@@ -32,6 +32,61 @@ exports.getplayermessage = function(req,res){
     }
   )
 }
+exports.signupleague = function(req,res){
+  var queryobj = {}
+  queryobj.sql = "select id as leagueid,name as leaguename,description from league where id = :leagueid ";
+  queryobj.params = {"leagueid":req.query.leagueid}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err) {
+          console.log("mysql err:"+err)
+          passauth = false;
+      }
+      var league = rows[0];
+      queryobj.sql = "select id as playerid,name as playername,location from player where user_id = :userid ";
+      queryobj.params = {"userid":req.user.userid}
+      mysqlclient.query(
+        queryobj,function(err,rows){
+          if (err) {
+              console.log("mysql err:"+err)
+              passauth = false;
+          }
+          queryobj.sql = "select id from signuptable where league_id = :leagueid and user_id = :userid ";
+          queryobj.params = {"userid":req.user.userid,"leagueid":req.query.leagueid}
+          mysqlclient.query(
+            queryobj,function(err,rows1){
+              if (err) {
+                  console.log("mysql err:"+err)
+                  passauth = false;
+              }
+              result={}
+              result.league = league;
+              result.player = rows;
+              result.issignup = rows1.length==0?false:true;
+              res.render("signupleague",result)
+            }
+          )
+        }
+      )
+    }
+  )
+}
+
+exports.dosignup = function(req,res){
+  var queryobj = {}
+  queryobj.sql = "insert signuptable(league_id,player_id,user_id) values (:leagueid,:playerid,:userid)";
+  queryobj.params = {"leagueid":req.query.leagueid,"playerid":req.query.playerid,"userid":req.user.userid}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err || !rows || rows.affectedRows === 0) {
+          console.log("mysql err:"+err)
+          
+          return res.send({"status":"error"})
+      }
+      res.redirect('/users/signupleague?leagueid='+req.query.leagueid)
+    }
+  )
+}
 exports.createplayer = function(req,res){
   var queryobj = {}
   queryobj.sql = "insert player(name,location,user_id) values (:playername,:location,:userid)";

@@ -3,66 +3,13 @@ var async = require('async')
 var objectutils = require('../utils/objectutils.js')
 var _ = require("underscore")._;
 var moment = require('moment');
-
-/*function sessionandrend(req,res,params,passauth){
-  if(passauth){
-    req.session.user_id = params.username;
-    req.session.user_name = params.username;
-    res.redirect("/admin")
-  }else{
-    var params={title:'Login error',error:"用户名或密码错误!"};
-      res.render('login', params);
-  }
-}
-function checkuser(req,res,params,callback){
-  var queryobj = {}
-  queryobj.sql = "select count(*) as num from user where name = :username and password = :password";
-  queryobj.params = {"username":params.username,"password":params.password}
-
-  var passauth = false;
-  mysqlclient.query(
-    queryobj,function(err,rows){
-      if (err || !rows || rows.affectedRows === 0) {
-          console.log("mysql err:"+err)
-          passauth = false;
-          return callback(req,res,params,passauth)
-      }
-      if(rows[0].num !=0)
-        passauth = true;
-
-      callback(req,res,params,passauth)
-    }
-  )
-}
-exports.dologin = function(req, res,next){
-    // 校验
-    req.assert('username', "用户名不能为空").notEmpty();
-    req.assert('password', "密码不能为空").notEmpty();
-    var errors = req.validationErrors();
-    if(errors && errors.length>0)
-    {
-      var ermsg = [];
-      for(var i=0;i<errors.length;i++)
-      {
-        ermsg.push(errors[i].msg);
-      }
-      var params={title:'管理后台-- 请先登录',error:ermsg.join("\t")};
-      res.render('login', params);
-      return;
-    }
-    var authparams = {}
-    authparams.username = req.body.username;
-    authparams.password = req.body.password;
-
-    checkuser(req,res,authparams,sessionandrend)
- 
-}*/
+var EventProxy = require('eventproxy');
 
 exports.createleague = function(req,res){
   var mode = "double"
   var queryobj = {}
-  queryobj.sql = "insert league(name,mode,status) values (:leaguename,:mode,:status)";
-  queryobj.params = {"leaguename":req.body.leaguename,"mode":mode,"status":"Create"}
+  queryobj.sql = "insert league(name,mode,status,description) values (:leaguename,:mode,:status,:description)";
+  queryobj.params = {"leaguename":req.body.leaguename,"mode":mode,"status":"Create","description":req.body.description}
   mysqlclient.query(
     queryobj,function(err,rows){
       if (err || !rows || rows.affectedRows === 0) {
@@ -76,7 +23,7 @@ exports.createleague = function(req,res){
 }
 exports.getleagues = function(req,res){
   var queryobj = {}
-  queryobj.sql = "select name,mode,id,status from league where status = :status";
+  queryobj.sql = "select name,mode,id,status from league";
   queryobj.params = {"status":"Active"}
   mysqlclient.query(
     queryobj,function(err,rows){
@@ -120,18 +67,37 @@ exports.changeleaguesatus = function(req,res){
           console.log("mysql err:"+err)
           return res.send({"status":"error"})
       }
-      queryobj.sql = "update league set status = :status where id = :leagueid;"
-      queryobj.params = {"leagueid":req.query.id,"status":rows[0].code}
-      mysqlclient.query(
-        queryobj,function(err,rows){
-          if (err ) {
-              console.log("mysql err:"+err)
-              return res.send({"status":"error"})
+      if(rows[0].code == 'Estage'){
+        finishgroupstage(req,res,function(req,res){
+          queryobj.sql = "update league set status = :status where id = :leagueid;"
+          queryobj.params = {"leagueid":req.query.id,"status":rows[0].code}
+          mysqlclient.query(
+            queryobj,function(err,rows){
+              if (err ) {
+                  console.log("mysql err:"+err)
+                  return res.send({"status":"error"})
+              }
+              
+              res.redirect('/admin/leaguedetail?id='+req.query.id)
+            }
+          )
+        });
+
+      }else{
+        queryobj.sql = "update league set status = :status where id = :leagueid;"
+        queryobj.params = {"leagueid":req.query.id,"status":rows[0].code}
+        mysqlclient.query(
+          queryobj,function(err,rows){
+            if (err ) {
+                console.log("mysql err:"+err)
+                return res.send({"status":"error"})
+            }
+            
+            res.redirect('/admin/leaguedetail?id='+req.query.id)
           }
-          
-          res.redirect('/admin/leaguedetail?id='+req.query.id)
-        }
-      )
+        )
+      }
+      
     }
   )
 }
@@ -258,6 +224,23 @@ exports.getplayerlist = function(req,res){
           passauth = false;
           return res.send({"status":"error"})
       }
+      res.send(rows)
+    }
+  )
+}
+exports.getsignplayerlist = function(req,res){
+  var queryobj = {}
+  queryobj.sql = "select B.name as playername,B.id as playerid,C.name as username from signuptable A,player B,user C \n"+
+                 " where A.league_id =:leagueid and A.player_id = B.id and A.user_id = C.id";
+  queryobj.params = {"leagueid":req.query.leagueid}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+      if (err) {
+          console.log("mysql err:"+err)
+          passauth = false;
+          return res.send({"status":"error"})
+      }
+      console.log(rows)
       res.send(rows)
     }
   )
@@ -541,5 +524,86 @@ exports.generateagenda = function(req,res){
       }
     )
   })
+
+}
+
+function finishgroupstage(req,res,cb) {
+  var comeinnum = 0;
+  var comeoutnum = 0;
+  var queryobj = {}
+  queryobj.sql = "select id as groupid from grouptable where league_id = :leagueid"
+  queryobj.params = {"leagueid":req.query.id}
+  mysqlclient.query(
+    queryobj,function(err,rows){
+     if (err) {
+            console.log("mysql err:"+err)
+            return res.send({"status":"error"})
+        }
+
+        comeinnum = rows.length*2;
+        comeoutnum = rows.length;
+        var newgroupname = comeinnum + "进" + comeoutnum;
+        var ep = new EventProxy();
+        ep.after('got_groupplayer', rows.length, function (list) {
+          var queryobj1 = {}
+          queryobj1.sql = "insert grouptable(name,league_id,type,level) values (:name,:leagueid,:type,:level)"
+          queryobj1.params = {"name":newgroupname,"leagueid":req.query.id,"type":"after","level":1}
+          mysqlclient.query(
+            queryobj1,function(err,rows2){
+             if (err) {
+                    console.log("mysql err:"+err)
+                    return res.send({"status":"error"})
+                }
+                var newgroupid = rows2.insertId;
+                var pool = mysqlclient.getpool();
+                var queryobj2 = {}
+                pool.getConnection(function (err, connection) {
+
+                  if (err) {
+                      throw err;
+                  }
+                  var attr = []
+
+                  _.each(list,function(val,index){
+                    _.each(val,function(v,i){
+                      var n=[newgroupid,parseInt(v.playerid)]
+                      attr.push(n);
+                    })
+                    
+                  })
+                    
+                  queryobj2.sql = "insert groupplayer(grouptable_id,player_id) values" + connection.escape(attr);
+                  connection.query(queryobj2.sql, function(err, results) {
+                    if (err) {
+                      console.log("mysql err:"+err)
+                      return res.send({"status":"error"})
+                    }
+                    cb(req,res);
+                  })
+                })
+          })
+        });
+        var outplayers = [];
+
+        _.each(rows,function(val,index){
+          var queryobjx = {}
+          queryobjx.sql = "select A.player_id as playerid,B.name as groupname from groupplayer A,grouptable B \n"+
+                 "where B.id = :groupid and A.grouptable_id = B.id order by score desc limit 2"
+          queryobjx.params = {"groupid":val.groupid}
+          mysqlclient.query(
+            queryobjx,function(err,rows1){
+             if (err) {
+                    console.log("mysql err:"+err)
+                    return res.send({"status":"error"})
+                }
+                ep.emit('got_groupplayer', rows1);
+            })
+        })
+        
+    })
+}
+
+
+exports.generateeliminationagenda = function(req,res) {
 
 }

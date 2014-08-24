@@ -18,5 +18,8 @@ router.post('/getplayermessage', usercontroller.getplayermessage);
 
 router.post('/createplayer', usercontroller.createplayer);
 
+router.get('/signupleague', usercontroller.signupleague);
+
+router.get('/dosignup',usercontroller.dosignup)
 
 module.exports = router;

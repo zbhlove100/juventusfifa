@@ -3,6 +3,18 @@ block content
   link(rel='stylesheet', href='/stylesheets/admindashboard.css')
   script.
     var lid = #{leagueid}
+    //-  function generatenextstage(){
+    //-   $.ajax({
+    //-       url:"/admin/generatenextstage",
+    //-       type:"POST",
+    //-       data:{"leagueid":lgid},
+    //-       dataType:"json",
+    //-       success:function(data){ 
+    //-         groupnode = data;
+            
+    //-       }
+    //-       })
+    //- }
     
   .container-fluid
       .row
@@ -30,18 +42,20 @@ block content
                 .form-group
                   label.col-sm-2.control-label(for="playerqq") 分组
                   .col-sm-10
-                    a.btn.btn-primary(href='/admin/editleague?id=#{leaguemessage.id}}&name={leaguename3}') 进入分组页面=>
+                    a.btn.btn-primary(href='/admin/editleague?id=#{leaguemessage.id}&name=#{leaguemessage.name}') 进入分组页面=>
                 .form-group
                   label.col-sm-2.control-label(for="playerqq") 赛程
                   .col-sm-10
-                    a.btn.btn-primary(href='/admin/editagenda?id=#{leaguemessage.id}&name={leaguename3}') 进入赛程页面=>
+                    a.btn.btn-primary(href='/admin/editagenda?id=#{leaguemessage.id}&name=#{leaguemessage.name}') 进入赛程页面=>
                 .form-group
                   label.col-sm-2.control-label(for="playerqq") 操作
                   .col-sm-10
                     case leaguemessage.status
-                      when 'Crete'
+                      when 'Create'
                         a.btn.btn-success(href='/admin/changeleaguesatus?id=#{leaguemessage.id}') 开始报名
                       when 'Prepare'
                         a.btn.btn-warning(href='/admin/changeleaguesatus?id=#{leaguemessage.id}') 开始比赛
-                      when 'Active'
-                        a.btn.btn-danger(href='/admin/changeleaguesatus?id=#{leaguemessage.id}') 结束比赛
+                      when 'Groupstage'
+                        a.btn.btn-danger(href='/admin/changeleaguesatus?id=#{leaguemessage.id}') 结束小组赛
+                      when 'Estage'
+                        a.btn.btn-danger(href='/admin/changeleaguesatus?id=#{leaguemessage.id}') 结束

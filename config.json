@@ -5,5 +5,5 @@
     "database_pass":"zbhxzz",
     "database_name":"juventus",
 	"connectionLimit":"5",
-	"captchapath":"/home/zhangbohan/myLearn/webWrok/juventusfifa/public/images/captcha/"
+	"captchapath":"/Users/zhangbohan/workspace/juventusapp/public/images/captcha/"
 }
