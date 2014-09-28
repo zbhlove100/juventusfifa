@@ -5,5 +5,7 @@
     "database_pass":"zbhxzz",
     "database_name":"juventus",
 	"connectionLimit":"5",
+	"bucketname":"recipe",
+	"bucketpassword":"zbhxzz",
 	"captchapath":"/Users/zhangbohan/workspace/juventusapp/public/images/captcha/"
 }

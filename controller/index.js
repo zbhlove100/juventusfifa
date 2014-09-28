@@ -7,8 +7,24 @@ var ccap = require('ccap');
 var fs = require('fs');
 var config = require('../config')
 var mkdirp = require('mkdirp');
+var couchbase = require("../utils/couchbase")
+var db = couchbase.getbucket()
 require('buffer')
 
+exports.randomrecipe = function(req,res){
+  
+  var randomid = Math.floor((Math.random() * 100) + 1);
+  console.log(randomid)
+  db.get(randomid+"", function(err, result) {
+        if (err) {
+          console.log("err:", err);
+         
+          return;
+        }
+        var obj = result.value;
+        res.send(obj)
+      }); 
+}
 exports.getrecentmatch = function(req,res){
   var queryobj = {}
   queryobj.sql = "select id as matchid,grouptable_id as groupid,homeplayerid,homeplayername,awayplayerid,awayplayername,homescore,awayscore \n"+

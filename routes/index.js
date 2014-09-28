@@ -13,6 +13,7 @@ router.get('/', function(req, res) {
   res.render('index',params);
 });
 
+
 /* GET login page. */
 router.get('/adminlogin', function(req, res) {
   //res.render('login', { title: 'login page' });
@@ -52,7 +53,7 @@ router.get('/registerfinish', function(req, res) {
   res.render('registerfinish');
 });
 
-
+router.get('/randomrecipe', indexcontroller.randomrecipe);
 router.get('/getcaptcha',indexcontroller.getcaptcha);
 
 router.get('/getrecentmatch', indexcontroller.getrecentmatch);

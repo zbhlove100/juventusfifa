@@ -25,6 +25,7 @@
     "ccap":"*",
     "mkdirp":"*",
     "eventproxy":"*",
+    "couchbase":"*",
     "jade": "~1.3.0"
   }
 }
